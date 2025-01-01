@@ -3,6 +3,7 @@ import { UserController } from "../controller/user-Controller";
 import { authMiddleware } from "../middlewares/auth-middleware"; // Optional: If you need auth protection
 import { RestaurantController } from "../controller/restaurant-Controller";
 import { ReviewController } from "../controller/review-Controller";
+import { CityController } from "../controller/city-Controller";
 
 const router = Router();
 
@@ -19,9 +20,13 @@ router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRest
 router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);
 
 router.post("/reviews/Create", authMiddleware, ReviewController.createReview);
-router.get("/reviews", authMiddleware, ReviewController.readAllReviews);
+router.get("/reviews/readall", authMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController.readReviewsByRestaurant);
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
+
+router.post("/city/create",authMiddleware, CityController.createCity);
+router.get("/city/read/:id",authMiddleware, CityController.readCityById);
+router.get("/city/readall", authMiddleware, CityController.readAllCities);
 
 
 

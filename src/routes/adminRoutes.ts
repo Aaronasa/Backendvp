@@ -3,6 +3,8 @@ import { UserController } from "../controller/user-Controller";
 import { adminMiddleware } from "../middlewares/admin-middleware"; // Optional: For admin-only routes
 import { RestaurantController } from "../controller/restaurant-Controller";
 import { ReviewController } from "../controller/review-Controller";
+import { CityController } from "../controller/city-Controller";
+
 
 const router = Router();
 
@@ -16,9 +18,16 @@ router.get('/restaurants/read/:id', adminMiddleware, RestaurantController.readRe
 router.put('/restaurants/update', adminMiddleware, RestaurantController.updateRestaurant);
 router.delete('/restaurants/delete', adminMiddleware, RestaurantController.deleteRestaurant);
 
-router.get("/reviews", adminMiddleware, ReviewController.readAllReviews);
+router.get("/reviews/readall", adminMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", adminMiddleware, ReviewController.readReviewsByRestaurant);
 router.put("/reviews/update", adminMiddleware, ReviewController.updateReview);
 router.delete("/reviews/delete", adminMiddleware, ReviewController.deleteReview);
+
+router.post("/city/create",adminMiddleware, CityController.createCity);
+router.get("/city/read/:id",adminMiddleware, CityController.readCityById);
+router.get("/cities/readall", adminMiddleware, CityController.readAllCities);
+router.put("/city/update", adminMiddleware, CityController.updateCity);
+router.delete("/city/delete", adminMiddleware, CityController.deleteCity);
+
 
 export default router;
