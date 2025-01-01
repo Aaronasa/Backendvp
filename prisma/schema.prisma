@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String @unique @db.VarChar(100)
+  users User[]
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @db.VarChar(100)
+  email    String @unique @db.VarChar(150)
+  password String @db.VarChar(100)
+  token    String? @db.VarChar(100)
+  
+  roleId Int
+  role   Role @relation(fields: [roleId], references: [id])
+  reviews Review[]
+}
+
+model Restaurant {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  address   String @db.VarChar(100)
+  phone     String @db.VarChar(100)
+  image     String @db.VarChar(100)
+  reviews   Review[]
+  foodRestaurants FoodRestaurant[]
+}
+
+model Review {
+  id           Int         @id @default(autoincrement())
+  userId       Int
+  restaurantId Int
+  content      String      @db.Text
+  rating       Int
+  createdAt    DateTime    @default(now())
+
+  user         User        @relation(fields: [userId], references: [id])
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+}
+
+model City {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  image     String @db.VarChar(100)
+  foods     Food[]
+}
+
+model Category {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  foods     Food[]
+}
+
+model Food {
+  id        Int    @id @default(autoincrement())
+  name      String @db.VarChar(100)
+  description String @db.Text
+  ingredients String @db.Text
+  image     String @db.VarChar(100)
+  category  Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  city      City @relation(fields: [cityId], references: [id])
+  cityId    Int
+  foodRestaurants FoodRestaurant[]
+}
+
+model FoodRestaurant {
+  id        Int    @id @default(autoincrement())
+  foodId    Int
+  restaurantId Int
+  price     Int
+  food      Food @relation(fields: [foodId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+}
+
+
+
