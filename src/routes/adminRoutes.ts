@@ -4,6 +4,8 @@ import { adminMiddleware } from "../middlewares/admin-middleware"; // Optional: 
 import { RestaurantController } from "../controller/restaurant-Controller";
 import { ReviewController } from "../controller/review-Controller";
 import { CityController } from "../controller/city-Controller";
+import { CategoryController } from "../controller/category-controller";
+
 
 
 const router = Router();
@@ -29,5 +31,10 @@ router.get("/cities/readall", adminMiddleware, CityController.readAllCities);
 router.put("/city/update", adminMiddleware, CityController.updateCity);
 router.delete("/city/delete", adminMiddleware, CityController.deleteCity);
 
+router.post("/category/create", adminMiddleware, CategoryController.createCategory);
+router.get("/category/read/:id", adminMiddleware, CategoryController.readCategoryById);
+router.get("/category/readall", adminMiddleware, CategoryController.readAllCategories);
+router.put("/category/update", adminMiddleware, CategoryController.updateCategory);
+router.delete("/category/delete", adminMiddleware, CategoryController.deleteCategory);
 
 export default router;
