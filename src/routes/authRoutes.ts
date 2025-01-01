@@ -6,6 +6,7 @@ import { ReviewController } from "../controller/review-Controller";
 import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
+import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
 
 const router = Router();
 
@@ -38,5 +39,9 @@ router.post("/food/create", authMiddleware, FoodController.createFood);
 router.get("/food/read/:id", authMiddleware, FoodController.readFoodById);
 router.get("/food/readall", authMiddleware, FoodController.readAllFoods);
 
+router.post("/foodrestaurant/create", authMiddleware, FoodRestaurantController.createFoodRestaurant);
+router.get("/foodrestaurant/read/:id", authMiddleware, FoodRestaurantController.readFoodRestaurantById);
+router.get("/foodrestaurant/readall", authMiddleware, FoodRestaurantController.readAllFoodRestaurants);
+router.put("/foodrestaurant/update", authMiddleware, FoodRestaurantController.updateFoodRestaurant);
 
 export default router;

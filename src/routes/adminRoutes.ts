@@ -6,6 +6,7 @@ import { ReviewController } from "../controller/review-Controller";
 import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
+import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
 
 
 
@@ -43,5 +44,11 @@ router.get("/food/read/:id", adminMiddleware, FoodController.readFoodById);
 router.get("/food/readall", adminMiddleware, FoodController.readAllFoods);
 router.put("/food/update", adminMiddleware, FoodController.updateFood);
 router.delete("/food/delete", adminMiddleware, FoodController.deleteFood);
+
+router.post("/foodrestaurant/create", adminMiddleware, FoodRestaurantController.createFoodRestaurant);
+router.get("/foodrestaurant/read/:id", adminMiddleware, FoodRestaurantController.readFoodRestaurantById);
+router.get("/foodrestaurant/readall", adminMiddleware, FoodRestaurantController.readAllFoodRestaurants);
+router.put("/foodrestaurant/update", adminMiddleware, FoodRestaurantController.updateFoodRestaurant);
+router.delete("/foodrestaurant/delete", adminMiddleware, FoodRestaurantController.deleteFoodRestaurant);
 
 export default router;
