@@ -1,6 +1,7 @@
 import express from "express";
 import publicRouter from "../routes/publicRoutes";
 import authRouter from "../routes/authRoutes";
+import adminRoutes from "../routes/adminRoutes";
 import { errorMiddleware } from "../middlewares/error-middleware";
 import { authMiddleware } from "../middlewares/auth-middleware";
 // import { protectedRouter } from "../routers/protected-router";
@@ -12,5 +13,6 @@ app.use('/public', publicRouter); // Use the publicRouter directly
 // app.use(protectedRouter); // You can uncomment if you have protected routes
 app.use(errorMiddleware); // Error handling middleware
 app.use('/auth',authRouter);
+app.use('/admin',adminRoutes);
 
 export default app;

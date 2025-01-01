@@ -1,11 +1,26 @@
 import { Request, Response } from "express";
 import { ICreateReview, IDeleteReview, IReadReview, IReview, IUpdateReview } from "../model/review-model";
 import { ReviewService } from "../services/review-Service";
+import { ReviewValidation } from "../validation/review-validation";
 
 export class ReviewController {
+  // static async createReview(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     const request: ICreateReview = req.body as ICreateReview;
+  //     const response: IReview = await new ReviewService().createReview(request);
+  //     res.status(201).json({
+  //       message: "Review successfully created.",
+  //       data: response,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: "An error occurred while creating the review." });
+  //   }
+  // }
+
   static async createReview(req: Request, res: Response): Promise<void> {
     try {
-      const request: ICreateReview = req.body as ICreateReview;
+      const request = ReviewValidation.CREATE.parse(req.body); // Validate and parse the request body
       const response: IReview = await new ReviewService().createReview(request);
       res.status(201).json({
         message: "Review successfully created.",
@@ -13,30 +28,52 @@ export class ReviewController {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "An error occurred while creating the review." });
+      res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while creating the review." });
     }
   }
 
+  // static async readReviewsByRestaurant(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     const restaurantId = parseInt(req.params.restaurantId, 10);
+  //     const response: IReview | IReview[] = await new ReviewService().readReview({ restaurantId });
+
+  //     // Check if the response is an array or a single review
+  //     if (Array.isArray(response)) {
+  //       res.status(200).json({
+  //         message: 'Reviews successfully retrieved for restaurant.',
+  //         data: response,
+  //       });
+  //     } else {
+  //       res.status(200).json({
+  //         message: 'Review successfully retrieved for restaurant.',
+  //         data: [response], // Wrap the single review in an array
+  //       });
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: 'An error occurred while retrieving the reviews for this restaurant.' });
+  //   }
+  // }
+
   static async readReviewsByRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      const restaurantId = parseInt(req.params.restaurantId, 10);
-      const response: IReview | IReview[] = await new ReviewService().readReview({ restaurantId });
+      const restaurantId = ReviewValidation.READ.parse({ restaurantId: parseInt(req.params.restaurantId, 10) }); // Validate restaurantId
+      const response = await new ReviewService().readReview(restaurantId);
 
-      // Check if the response is an array or a single review
       if (Array.isArray(response)) {
         res.status(200).json({
-          message: 'Reviews successfully retrieved for restaurant.',
+          message: "Reviews successfully retrieved for restaurant.",
           data: response,
         });
       } else {
         res.status(200).json({
-          message: 'Review successfully retrieved for restaurant.',
-          data: [response], // Wrap the single review in an array
+          message: "Review successfully retrieved for restaurant.",
+          data: [response],
         });
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'An error occurred while retrieving the reviews for this restaurant.' });
+      res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while retrieving the reviews for this restaurant." });
     }
   }
 
@@ -64,46 +101,75 @@ export class ReviewController {
   }
   
 
-  static async updateReview(req: Request, res: Response): Promise<void> {
+//   static async updateReview(req: Request, res: Response): Promise<void> {
+//   try {
+//     const { id } = req.params; // Extract ID from route params
+//     const { content, rating }: { content?: string; rating?: number } = req.body;
+
+//     if (!id) {
+//       res.status(400).json({ error: "Review ID is required to update the review." });
+//       return;
+//     }
+
+//     const updateData: IUpdateReview = { id: Number(id), content, rating };
+
+//     // Call the service to update the review
+//     const updatedReview: IReview = await new ReviewService().updateReview(updateData);
+
+//     // Send a successful response
+//     res.status(200).json({
+//       message: "Review successfully updated.",
+//       data: updatedReview,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "An error occurred while updating the review." });
+//   }
+// }
+
+static async updateReview(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params; // Extract ID from route params
-    const { content, rating }: { content?: string; rating?: number } = req.body;
+    const { id } = req.params;
+    const updateData = ReviewValidation.UPDATE.parse({ id: parseInt(id, 10), ...req.body }); // Validate and parse the input
+    const response = await new ReviewService().updateReview(updateData);
 
-    if (!id) {
-      res.status(400).json({ error: "Review ID is required to update the review." });
-      return;
-    }
-
-    const updateData: IUpdateReview = { id: Number(id), content, rating };
-
-    // Call the service to update the review
-    const updatedReview: IReview = await new ReviewService().updateReview(updateData);
-
-    // Send a successful response
     res.status(200).json({
       message: "Review successfully updated.",
-      data: updatedReview,
+      data: response,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "An error occurred while updating the review." });
+    res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while updating the review." });
   }
 }
-
-
   
+
+  // static async deleteReview(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     const request: IDeleteReview = req.body as IDeleteReview;
+  //     const response: IReview = await new ReviewService().deleteReview(request);
+  //     res.status(200).json({
+  //       message: "Review successfully deleted.",
+  //       data: response,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500).json({ error: "An error occurred while deleting the review." });
+  //   }
+  // }
 
   static async deleteReview(req: Request, res: Response): Promise<void> {
     try {
-      const request: IDeleteReview = req.body as IDeleteReview;
-      const response: IReview = await new ReviewService().deleteReview(request);
+      const request = ReviewValidation.DELETE.parse(req.body); // Validate and parse the input
+      const response = await new ReviewService().deleteReview(request);
+
       res.status(200).json({
         message: "Review successfully deleted.",
         data: response,
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "An error occurred while deleting the review." });
+      res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while deleting the review." });
     }
   }
 }
