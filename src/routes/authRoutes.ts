@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { UserController } from "../controller/user-Controller";
 import { authMiddleware } from "../middlewares/auth-middleware"; // Optional: If you need auth protection
+import { RestaurantController } from "../controller/restaurant-Controller";
+import { ReviewController } from "../controller/review-Controller";
 
 const router = Router();
 
@@ -11,5 +13,16 @@ router.put("/update", authMiddleware, UserController.updateUser);
 router.delete("/delete", authMiddleware, UserController.deleteUser);
 
 router.post("/logout", UserController.logout);
+
+router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
+router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);
+router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);
+
+router.post("/reviews/Create", authMiddleware, ReviewController.createReview);
+router.get("/reviews", authMiddleware, ReviewController.readAllReviews);
+router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController.readReviewsByRestaurant);
+router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
+
+
 
 export default router;
