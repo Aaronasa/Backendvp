@@ -5,6 +5,7 @@ import { RestaurantController } from "../controller/restaurant-Controller";
 import { ReviewController } from "../controller/review-Controller";
 import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
+import { FoodController } from "../controller/food-Controller";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ router.get("/city/readall", authMiddleware, CityController.readAllCities);
 router.post("/category/create", authMiddleware, CategoryController.createCategory);
 router.get("/category/read/:id", authMiddleware, CategoryController.readCategoryById);
 router.get("/category/readall", authMiddleware, CategoryController.readAllCategories);
-router.put("/category/update", authMiddleware, CategoryController.updateCategory);
+
+router.post("/food/create", authMiddleware, FoodController.createFood);
+router.get("/food/read/:id", authMiddleware, FoodController.readFoodById);
+router.get("/food/readall", authMiddleware, FoodController.readAllFoods);
+
 
 export default router;
