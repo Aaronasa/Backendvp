@@ -7,6 +7,7 @@ import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
 import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
+import { upload } from "../middlewares/multer-middleware";
 
 
 
@@ -16,10 +17,10 @@ const router = Router();
 // You can add more routes for admin-only access
 router.get("/read", adminMiddleware, UserController.readUser);
 
-router.post('/restaurants/create', adminMiddleware, RestaurantController.createRestaurant);
+router.post('/restaurants/create', adminMiddleware, upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', adminMiddleware, RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', adminMiddleware, RestaurantController.readRestaurantById);
-router.put('/restaurants/update', adminMiddleware, RestaurantController.updateRestaurant);
+router.put('/restaurants/update', adminMiddleware, upload.single('image'), RestaurantController.updateRestaurant);
 router.delete('/restaurants/delete', adminMiddleware, RestaurantController.deleteRestaurant);
 
 router.get("/reviews/readall", adminMiddleware, ReviewController.readAllReviews);
@@ -27,10 +28,10 @@ router.get("/reviews/restaurant/:restaurantId", adminMiddleware, ReviewControlle
 router.put("/reviews/update", adminMiddleware, ReviewController.updateReview);
 router.delete("/reviews/delete", adminMiddleware, ReviewController.deleteReview);
 
-router.post("/city/create",adminMiddleware, CityController.createCity);
-router.get("/city/read/:id",adminMiddleware, CityController.readCityById);
-router.get("/cities/readall", adminMiddleware, CityController.readAllCities);
-router.put("/city/update", adminMiddleware, CityController.updateCity);
+router.post("/city/create", adminMiddleware, upload.single("image"), CityController.createCity);
+router.get("/city/read/:id", adminMiddleware, CityController.readCityById);
+router.get("/city/readall", adminMiddleware, CityController.readAllCities);
+router.put("/city/update", adminMiddleware, upload.single("image"), CityController.updateCity);
 router.delete("/city/delete", adminMiddleware, CityController.deleteCity);
 
 router.post("/category/create", adminMiddleware, CategoryController.createCategory);
@@ -39,10 +40,10 @@ router.get("/category/readall", adminMiddleware, CategoryController.readAllCateg
 router.put("/category/update", adminMiddleware, CategoryController.updateCategory);
 router.delete("/category/delete", adminMiddleware, CategoryController.deleteCategory);
 
-router.post("/food/create", adminMiddleware, FoodController.createFood);
+router.post("/food/create", adminMiddleware, upload.single("image"), FoodController.createFood);
 router.get("/food/read/:id", adminMiddleware, FoodController.readFoodById);
 router.get("/food/readall", adminMiddleware, FoodController.readAllFoods);
-router.put("/food/update", adminMiddleware, FoodController.updateFood);
+router.put("/food/update", adminMiddleware, upload.single("image"), FoodController.updateFood);
 router.delete("/food/delete", adminMiddleware, FoodController.deleteFood);
 
 router.post("/foodrestaurant/create", adminMiddleware, FoodRestaurantController.createFoodRestaurant);

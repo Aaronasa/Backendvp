@@ -6,7 +6,16 @@ import { CityValidation } from "../validation/city-validation";
 export class CityController {
   static async createCity(req: Request, res: Response): Promise<void> {
     try {
-      const request = CityValidation.CREATE.parse(req.body);
+      if (!req.file) {
+        throw new Error("Image file is required.");
+      }
+
+      const imagePath = `/uploads/images/${req.file.filename}`;
+      const request = CityValidation.CREATE.parse({
+        ...req.body,
+        image: imagePath,
+      });
+
       const response: ICity = await new CityService().createCity(request);
       res.status(201).json({
         message: "City successfully created.",
@@ -47,7 +56,16 @@ export class CityController {
 
   static async updateCity(req: Request, res: Response): Promise<void> {
     try {
-      const request = CityValidation.UPDATE.parse(req.body);
+      let imagePath = undefined;
+      if (req.file) {
+        imagePath = `/uploads/images/${req.file.filename}`;
+      }
+
+      const request = CityValidation.UPDATE.parse({
+        ...req.body,
+        ...(imagePath && { image: imagePath }),
+      });
+
       const response: ICity = await new CityService().updateCity(request);
       res.status(200).json({
         message: "City successfully updated.",

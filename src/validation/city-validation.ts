@@ -3,13 +3,13 @@ import { z, ZodType } from "zod";
 export class CityValidation {
   static readonly CREATE: ZodType = z.object({
     name: z.string().min(3).max(100),
-    image: z.string().min(5).max(100),
+    image: z.string().min(5).max(200), // Path to the uploaded image
   });
 
   static readonly UPDATE: ZodType = z.object({
     id: z.number().positive(),
     name: z.string().min(3).max(100).optional(),
-    image: z.string().min(5).max(100).optional(),
+    image: z.string().min(5).max(200).optional(),
   });
 
   static readonly DELETE: ZodType = z.object({

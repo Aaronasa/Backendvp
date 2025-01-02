@@ -5,9 +5,11 @@ export class RestaurantValidation {
   static readonly CREATE: ZodType = z.object({
     name: z.string().min(3).max(100),
     address: z.string().min(5).max(200),
-    phone: z.string().regex(/^[0-9\-+]{9,15}$/), // Validates phone number format
-    image: z.string(), // Validates a proper URL for image
+    phone: z.string().regex(/^[0-9\-+]{9,15}$/),
+    image: z.string().optional(), // Will be handled dynamically
   });
+  
+ 
 
   // Schema for updating a restaurant
   static readonly UPDATE: ZodType = z.object({
@@ -15,7 +17,7 @@ export class RestaurantValidation {
     name: z.string().min(3).max(100).optional(),
     address: z.string().min(5).max(200).optional(),
     phone: z.string().regex(/^[0-9\-+]{9,15}$/).optional(),
-    image: z.string(),
+    image: z.string().optional(),
   });
 
   // Schema for deleting a restaurant

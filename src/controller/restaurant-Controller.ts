@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ICreateRestaurant, IDeleteRestaurant, IReadRestaurant, IRestaurant, IUpdateRestaurant } from '../model/restaurant-model';
-import { RestaurantService } from '../services/restaurant-service';
+import { RestaurantService } from '../services/restaurant-Service';
 import { RestaurantValidation } from "../validation/restaurant-validation";
 
 
@@ -9,20 +9,25 @@ export class RestaurantController {
 
   static async createRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      // Validate the request body
-      const request = RestaurantValidation.CREATE.parse(req.body);
-      
-      // Proceed with service logic
+      if (!req.file) throw new Error('Image is required');
+      const imagePath = `/uploads/images/${req.file.filename}`;
+  
+      const request = {
+        ...RestaurantValidation.CREATE.parse(req.body),
+        image: imagePath, // Add the uploaded image path
+      };
+  
       const response: IRestaurant = await new RestaurantService().createRestaurant(request);
       res.status(201).json({
-        message: "Restaurant successfully created.",
+        message: 'Restaurant successfully created.',
         data: response,
       });
     } catch (error) {
       console.error(error);
-      res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while creating the restaurant." });
+      res.status(400).json({ error: error instanceof Error ? error.message : 'An error occurred while creating the restaurant.' });
     }
   }
+  
 
 
   static async readRestaurantById(req: Request, res: Response): Promise<void> {
@@ -59,13 +64,16 @@ export class RestaurantController {
 
   static async updateRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      // Validate the request body
-      const request = RestaurantValidation.UPDATE.parse(req.body);
-
-      // Proceed with service logic
+      const imagePath = req.file ? `/uploads/images/${req.file.filename}` : undefined;
+  
+      const request = {
+        ...RestaurantValidation.UPDATE.parse(req.body),
+        ...(imagePath ? { image: imagePath } : {}),
+      };
+  
       const response: IRestaurant = await new RestaurantService().updateRestaurant(request);
       res.status(200).json({
-        message: "Restaurant successfully updated.",
+        message: 'Restaurant successfully updated.',
         data: response,
       });
     } catch (error) {
