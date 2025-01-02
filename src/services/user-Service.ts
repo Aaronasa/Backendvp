@@ -1,4 +1,11 @@
-import { IUser, ICreateUser, IUpdateUser, IDeleteUser, IReadUser } from "../model/user-Model";
+// user-Service.ts
+import {
+  IUser,
+  ICreateUser,
+  IUpdateUser,
+  IDeleteUser,
+  IReadUser,
+} from "../model/user-Model";
 import { PrismaClient } from "@prisma/client"; // Import Prisma Client
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
@@ -15,27 +22,34 @@ export class UserService {
         username: data.username,
         email: data.email,
         password: hashedPassword,
-        roleId: 2
+        roleId: 2,
       },
     });
     return newUser;
   }
 
-  // Read user(s)
-  async readUser(query: IReadUser): Promise<IUser | IUser[]> {
-    if (query.id) {
-      const user = await prisma.user.findUnique({
-        where: { id: query.id },
-        include: { role: true, reviews: true }, // Include relations
-      });
-      if (!user) throw new Error(`User with ID ${query.id} not found`);
-      return user;
-    } else {
-      const users = await prisma.user.findMany({
-        include: { role: true, reviews: true }, // Include relations
-      });
-      return users;
+  // Read all users
+  async readAllUsers(): Promise<IUser[]> {
+    const users = await prisma.user.findMany({
+      include: { role: true, reviews: true }, // Include relations
+    });
+    return users;
+  }
+
+  // Read a user by ID (for logged-in user)
+  async readUserByToken(email: string, token: string): Promise<IUser | null> {
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { role: true, reviews: true }, // Include relations if needed
+    });
+
+    // Check if the user exists and if the token matches
+    if (user && user.token === token) {
+      return user; // Return the user if token matches
     }
+
+    return null; // If no user or token doesn't match, return null
   }
 
   // Update a user
@@ -63,7 +77,7 @@ export class UserService {
 
   // Login a user
   async login(email: string, password: string): Promise<IUser> {
-    // Temukan user berdasarkan email
+    // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -72,23 +86,15 @@ export class UserService {
       throw new ResponseError(400, "Invalid email or password");
     }
 
-    // Bandingkan password yang dimasukkan dengan yang disimpan (hashed)
+    // Compare entered password with the stored (hashed) password
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       throw new ResponseError(400, "Invalid email or password");
     }
 
-    // Generate token baru
-    const newToken = uuid();
-
-    // Update user dengan token baru
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: { token: newToken },
-    });
-
-    return updatedUser;
+    // Return user with original token
+    return user; // Don't generate a new token, just return the existing one
   }
 
   // Logout a user

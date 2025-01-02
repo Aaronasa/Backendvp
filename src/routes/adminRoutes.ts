@@ -15,7 +15,7 @@ const router = Router();
 
 // Admin Route: Read User (Can be customized further to only allow admin to view all users)
 // You can add more routes for admin-only access
-router.get("/read", adminMiddleware, UserController.readUser);
+// router.get("/read", adminMiddleware, UserController.readUser);
 
 router.post('/restaurants/create', adminMiddleware, upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', adminMiddleware, RestaurantController.readAllRestaurants);

@@ -10,13 +10,26 @@ import { FoodRestaurantController } from "../controller/foodRestaurant-Controlle
 
 const router = Router();
 
-// Protected Route: Update User (Requires Auth)
-router.put("/update", authMiddleware, UserController.updateUser);
+// // Protected Route: Update User (Requires Auth)
+// router.put("/update", authMiddleware, UserController.updateUser);
 
-// Protected Route: Delete User (Requires Auth)
-router.delete("/delete", authMiddleware, UserController.deleteUser);
+// // Protected Route: Delete User (Requires Auth)
+// router.delete("/delete", authMiddleware, UserController.deleteUser);
 
-router.post("/logout", UserController.logout);
+
+// router.post("/logout", UserController.logout);
+// router.post('/create', UserController.createUser);
+
+// Read all users route (admin or authorized users)
+router.get('/read/all', authMiddleware, UserController.readAllUsers);
+
+// Read user by token (only for logged-in users)
+router.get('/read', authMiddleware, UserController.readUserByToken);
+
+// Login and Logout routes
+// router.post('/login', UserController.login);
+router.post('/logout', authMiddleware, UserController.logout)
+
 
 router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);

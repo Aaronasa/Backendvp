@@ -1,3 +1,4 @@
+// authMiddleware.ts
 import { NextFunction, Response } from "express";
 import { UserRequest } from "../types/user-request";
 import { ResponseError } from "../Error/response-error";

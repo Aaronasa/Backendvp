@@ -8,7 +8,7 @@ const router = Router();
 router.post("/create", UserController.createUser);
 
 // Public Route: Read User (can be with query params to fetch specific user)
-router.get("/read", UserController.readUser);
+// router.get("/read", UserController.readUser);
 
 router.post("/login", UserController.login);
 
