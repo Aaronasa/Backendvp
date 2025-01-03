@@ -49,37 +49,39 @@ export class UserController {
 
   static async readUserByToken(req: UserRequest, res: Response): Promise<void> {
     try {
-      const email = req.body.email; // Extract email from the body or use query params
-      const token = req.get("x-API-Token"); // Extract the token from headers (e.g., x-API-Token)
-
-      if (!email || !token) {
-        res.status(400).json({ error: "Email and token are required." });
+      // `req.user` is populated by `authMiddleware`
+      const user = req.user;
+  
+      if (!user) {
+        console.error("User not found in the request.");
+        res.status(403).json({ error: "You are not authorized to access this resource." });
         return;
       }
-
-      // Pass both email and token to the service method
-      const response: IUser | null = await new UserService().readUserByToken(
-        email,
-        token
-      );
-
-      if (response) {
-        res.status(200).json({
-          message: "User successfully retrieved.",
-          data: response,
-        });
-      } else {
-        res
-          .status(404)
-          .json({ error: "User not found or token does not match." });
+  
+      // Validate the email matches the authenticated user
+      const email = req.body.email;
+      if (!email || email !== user.email) {
+        console.error("Email does not match the authenticated user.");
+        res.status(400).json({ error: "Invalid email address." });
+        return;
       }
+  
+      // Respond with user data
+      res.status(200).json({
+        message: "User successfully retrieved.",
+        data: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          token: user.token,
+        },
+      });
     } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ error: "An error occurred while retrieving the user." });
+      console.error("Error in readUserByToken:", error);
+      res.status(500).json({ error: "An error occurred while retrieving the user." });
     }
   }
+  
 
   // Login User
   static async login(req: Request, res: Response): Promise<void> {

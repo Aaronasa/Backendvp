@@ -1,55 +1,49 @@
 import { NextFunction, Response } from "express";
 import { UserRequest } from "../types/user-request";
 import { ResponseError } from "../Error/response-error";
-import { prismaClient } from "../application/database";
+import { PrismaClient } from "@prisma/client";
+
+const prismaClient = new PrismaClient();
 
 export const authMiddleware = async (
   req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
-  const token = req.get("x-API-Token");
-  console.log("Received Token from request header:", token); // Log token yang diterima
+  let token = req.get("x-API-Token"); // Get token from header
+  console.log("authMiddleware: Token received:", token);
 
-  if (token) {
-    try {
-      // Cek apakah pengguna dengan token ini ada di database
-      const user = await prismaClient.user.findFirst({
-        where: {
-          token: token, // Memeriksa apakah token ada di database
-        },
-        include: {
-          role: true, // Termasuk data role pengguna
-        },
-      });
+  if (!token) {
+    console.error("No token provided in the request headers.");
+    return next(new ResponseError(401, "No token provided"));
+  }
 
-      if (user) {
-        // Menambahkan log untuk memeriksa data pengguna
-        console.log("User found in database:", user);
-        console.log("User roleId from database:", user.roleId);
+  // Split token if it's comma-separated and take the first value
+  if (token.includes(',')) {
+    console.warn('authMiddleware: Multiple tokens detected:', token);
+    token = token.split(',')[0].trim(); // Use the first token and trim whitespace
+  }
 
-        // Periksa apakah roleId pengguna sesuai dengan yang diharapkan
-        if (user.roleId === 2) {  // Misalnya, roleId yang valid adalah 2
-          req.user = user; // Menambahkan data pengguna ke request
-          next(); // Lanjutkan ke middleware atau handler berikutnya
-        } else {
-          // Role pengguna tidak sesuai
-          console.log("User roleId is not authorized:", user.roleId);
-          next(new ResponseError(403, "You do not have the necessary role"));
-        }
-      } else {
-        // Token tidak ditemukan di database
-        console.log("Token not found in database");
-        next(new ResponseError(403, "You are not authorized to access this resource"));
-      }
-    } catch (error) {
-      // Error saat melakukan query ke database
-      console.error("Error in authMiddleware:", error);
-      next(new ResponseError(500, "Internal Server Error"));
+  console.log('authMiddleware: Token after sanitization:', token);
+
+  try {
+    const user = await prismaClient.user.findFirst({
+      where: { token }, // Check token against database
+      include: { role: true }, // Include role data
+    });
+
+    console.log("authMiddleware: User retrieved from database:", user);
+
+    if (!user) {
+      console.error(`Token mismatch. Received token: ${token}`);
+      return next(new ResponseError(403, "You are not authorized to access this resource"));
     }
-  } else {
-    // Token tidak diberikan
-    console.log("No token provided");
-    next(new ResponseError(401, "No token provided"));
+
+    req.user = user; // Attach user to request
+    next(); // Proceed to next middleware/route
+  } catch (error) {
+    console.error("Error in authMiddleware:", error);
+    next(new ResponseError(500, "Internal Server Error"));
   }
 };
+

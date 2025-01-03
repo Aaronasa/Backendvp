@@ -20,14 +20,9 @@ const router = Router();
 // router.post("/logout", UserController.logout);
 // router.post('/create', UserController.createUser);
 
-// Read all users route (admin or authorized users)
+
 router.get('/read/all', authMiddleware, UserController.readAllUsers);
-
-// Read user by token (only for logged-in users)
 router.post('/read', authMiddleware, UserController.readUserByToken);
-
-// Login and Logout routes
-// router.post('/login', UserController.login);
 router.post('/logout', authMiddleware, UserController.logout)
 
 

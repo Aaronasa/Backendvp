@@ -86,24 +86,14 @@ export class UserService {
     }
   
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-  
     if (!isPasswordCorrect) {
       throw new ResponseError(400, "Invalid email or password");
     }
   
-    // Generate a new token (e.g., using UUID or any other method)
-    const newToken = uuid();  // Ganti dengan metode pembuatan token yang sesuai
-  
-    // Update token di database
-    await prisma.user.update({
-      where: { email },
-      data: { token: newToken },
-    });
-  
-    // Return the user object with the new token
-    user.token = newToken;
+    console.log(`User ${email} logged in. Token: ${user.token}`); // Log token
     return user;
-  }  
+  }
+  
 
   // Logout a user
   async logout(userId: number): Promise<string> {
