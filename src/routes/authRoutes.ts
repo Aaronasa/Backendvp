@@ -24,7 +24,7 @@ const router = Router();
 router.get('/read/all', authMiddleware, UserController.readAllUsers);
 
 // Read user by token (only for logged-in users)
-router.get('/read', authMiddleware, UserController.readUserByToken);
+router.post('/read', authMiddleware, UserController.readUserByToken);
 
 // Login and Logout routes
 // router.post('/login', UserController.login);

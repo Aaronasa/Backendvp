@@ -77,25 +77,33 @@ export class UserService {
 
   // Login a user
   async login(email: string, password: string): Promise<IUser> {
-    // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
-
+  
     if (!user) {
       throw new ResponseError(400, "Invalid email or password");
     }
-
-    // Compare entered password with the stored (hashed) password
+  
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
+  
     if (!isPasswordCorrect) {
       throw new ResponseError(400, "Invalid email or password");
     }
-
-    // Return user with original token
-    return user; // Don't generate a new token, just return the existing one
-  }
+  
+    // Generate a new token (e.g., using UUID or any other method)
+    const newToken = uuid();  // Ganti dengan metode pembuatan token yang sesuai
+  
+    // Update token di database
+    await prisma.user.update({
+      where: { email },
+      data: { token: newToken },
+    });
+  
+    // Return the user object with the new token
+    user.token = newToken;
+    return user;
+  }  
 
   // Logout a user
   async logout(userId: number): Promise<string> {
