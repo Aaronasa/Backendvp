@@ -53,24 +53,37 @@ export class UserService {
   }
 
   // Update a user
-  async updateUser(data: IUpdateUser): Promise<IUser> {
-    const updatedUser = await prisma.user.update({
-      where: { id: data.id },
-      data: {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        token: data.token,
-        roleId: data.roleId,
-      },
+  async updateUser(userId: number, username: string, email: string): Promise<IUser> {
+    // Ensure that the email is unique
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new ResponseError(400, "Email is already taken.");
+    }
+
+    // Update the user in the database
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { username, email },
+    });
+
     return updatedUser;
   }
 
+  async getUserById(userId: number): Promise<IUser | null> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true, reviews: true }, // Include any related data
+    });
+    return user;
+  }
+
   // Delete a user
-  async deleteUser(data: IDeleteUser): Promise<IUser> {
+  async deleteUser(userId: number): Promise<IUser> {
     const deletedUser = await prisma.user.delete({
-      where: { id: data.id },
+      where: { id: userId },
     });
     return deletedUser;
   }
@@ -84,11 +97,17 @@ export class UserService {
     if (!user) {
       throw new ResponseError(400, "Invalid email or password");
     }
+    const newToken = this.generateToken(32);
   
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       throw new ResponseError(400, "Invalid email or password");
     }
+    user.token = newToken;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { token: newToken },
+    });
   
     console.log(`User ${email} logged in. Token: ${user.token}`); // Log token
     return user;
@@ -102,5 +121,15 @@ export class UserService {
       data: { token: "" }, // Clear the token
     });
     return "Logged out successfully";
+  }
+
+  private generateToken(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let newtoken = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      newtoken += characters[randomIndex];
+    }
+    return newtoken;
   }
 }

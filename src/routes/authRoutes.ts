@@ -24,7 +24,8 @@ const router = Router();
 router.get('/read/all', authMiddleware, UserController.readAllUsers);
 router.post('/read', authMiddleware, UserController.readUserByToken);
 router.post('/logout', authMiddleware, UserController.logout)
-
+router.put('/update', authMiddleware, UserController.updateUser);
+router.delete('/delete', authMiddleware, UserController.deleteUser);
 
 router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);

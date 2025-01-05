@@ -73,6 +73,7 @@ export class UserController {
           id: user.id,
           username: user.username,
           email: user.email,
+          password: user.password,
           token: user.token,
         },
       });
@@ -90,7 +91,7 @@ export class UserController {
       const response = await new UserService().login(email, password);
       res.status(200).json({
         message: "Login successful.",
-        data: response, // User data returned along with token
+        data: response, 
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -111,7 +112,6 @@ export class UserController {
       const userId = req.user?.id; // Ensure the user is logged in
 
       if (userId === undefined) {
-        // If userId is undefined, return an appropriate error response
         res.status(400).json({ error: "User is not authenticated." });
         return;
       }
@@ -123,6 +123,58 @@ export class UserController {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "An error occurred while logging out." });
+    }
+  }
+
+  static async deleteUser(req: UserRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id; // Get the authenticated user from the request
+
+      if (!userId) {
+        res.status(403).json({ error: "You are not authorized to delete this user." });
+        return;
+      }
+
+      const userService = new UserService();
+
+      // Call the service to delete the user
+      const deletedUser = await userService.deleteUser(userId);
+
+      res.status(200).json({
+        message: "User deleted successfully.",
+        data: deletedUser,
+      });
+    } catch (error) {
+      console.error("Error in deleteUser:", error);
+      res.status(500).json({ error: "An error occurred while deleting the user." });
+    }
+  }
+
+
+  static async updateUser(req: UserRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(400).json({ error: "User is not authenticated." });
+        return;
+      }
+
+      const { username, email }: IUpdateUser = req.body;
+      if (!username || !email) {
+        res.status(400).json({ error: "Username and email are required." });
+        return;
+      }
+
+      // Call service to update the user
+      const updatedUser = await new UserService().updateUser(userId, username, email);
+
+      res.status(200).json({
+        message: "User updated successfully.",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error in updateUser:", error);
+      res.status(500).json({ error: "An error occurred while updating the user." });
     }
   }
 }
