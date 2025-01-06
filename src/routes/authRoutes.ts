@@ -28,7 +28,8 @@ router.get('/read/all', authMiddleware, UserController.readAllUsers);
 router.post('/read', authMiddleware, UserController.readUserByToken);
 router.put('/update/user', authMiddleware, UserController.updateUser);
 router.post('/logout', authMiddleware, UserController.logout)
-
+router.put('/update', authMiddleware, UserController.updateUser);
+router.delete('/delete', authMiddleware, UserController.deleteUser);
 
 router.post('/restaurants/create', authMiddleware, upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);

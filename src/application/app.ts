@@ -15,7 +15,6 @@ const app = express();
 
 app.use(express.json());
 app.use('/public', publicRouter); // Use the publicRouter directly
-// app.use(protectedRouter); // You can uncomment if you have protected routes
 app.use(errorMiddleware); // Error handling middleware
 app.use('/auth',authRouter);
 app.use('/admin',adminRoutes);

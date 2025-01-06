@@ -8,7 +8,6 @@ import {
 } from "../model/user-Model";
 import { PrismaClient } from "@prisma/client"; // Import Prisma Client
 import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
 import { ResponseError } from "../Error/response-error";
 
 const prisma = new PrismaClient();
@@ -72,11 +71,18 @@ export class UserService {
     return updatedUser;
   }
 
+  async getUserById(userId: number): Promise<IUser | null> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true, reviews: true }, // Include any related data
+    });
+    return user;
+  }
 
   // Delete a user
-  async deleteUser(data: IDeleteUser): Promise<IUser> {
+  async deleteUser(userId: number): Promise<IUser> {
     const deletedUser = await prisma.user.delete({
-      where: { id: data.id },
+      where: { id: userId },
     });
     return deletedUser;
   }
@@ -90,11 +96,17 @@ export class UserService {
     if (!user) {
       throw new ResponseError(400, "Invalid email or password");
     }
+    const newToken = this.generateToken(32);
   
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       throw new ResponseError(400, "Invalid email or password");
     }
+    user.token = newToken;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { token: newToken },
+    });
   
     console.log(`User ${email} logged in. Token: ${user.token}`); // Log token
     return user;
@@ -108,5 +120,15 @@ export class UserService {
       data: { token: "" }, // Clear the token
     });
     return "Logged out successfully";
+  }
+
+  private generateToken(length: number): string {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let newtoken = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      newtoken += characters[randomIndex];
+    }
+    return newtoken;
   }
 }

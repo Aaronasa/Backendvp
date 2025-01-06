@@ -12,7 +12,6 @@ import { UserService } from "../services/user-Service";
 import { UserRequest } from "../types/user-request";
 
 export class UserController {
-  
   // Create User
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
@@ -47,6 +46,7 @@ export class UserController {
   }
 
   // userController.ts
+
   static async readUserByToken(req: UserRequest, res: Response): Promise<void> {
     try {
       // `req.user` is populated by `authMiddleware`
@@ -73,6 +73,7 @@ export class UserController {
           id: user.id,
           username: user.username,
           email: user.email,
+          password: user.password,
           token: user.token,
         },
       });
@@ -90,7 +91,7 @@ export class UserController {
       const response = await new UserService().login(email, password);
       res.status(200).json({
         message: "Login successful.",
-        data: response, // User data returned along with token
+        data: response, 
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -108,10 +109,9 @@ export class UserController {
   // Logout User
   static async logout(req: UserRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id; // Ensure the user is logged in
+      const userId = req.user?.id;
 
       if (userId === undefined) {
-        // If userId is undefined, return an appropriate error response
         res.status(400).json({ error: "User is not authenticated." });
         return;
       }
@@ -125,6 +125,32 @@ export class UserController {
       res.status(500).json({ error: "An error occurred while logging out." });
     }
   }
+
+  static async deleteUser(req: UserRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        res.status(403).json({ error: "You are not authorized to delete this user." });
+        return;
+      }
+
+      const userService = new UserService();
+
+      // Call the service to delete the user
+      const deletedUser = await userService.deleteUser(userId);
+
+      res.status(200).json({
+        message: "User deleted successfully.",
+        data: deletedUser,
+      });
+    } catch (error) {
+      console.error("Error in deleteUser:", error);
+      res.status(500).json({ error: "An error occurred while deleting the user." });
+    }
+  }
+
+
   static async updateUser(req: UserRequest, res: Response): Promise<void> {
     try {
       const userId = req.user?.id;
@@ -148,8 +174,7 @@ export class UserController {
       });
     } catch (error) {
       console.error("Error in updateUser:", error);
-      res.status(500).json({ error: "An error occurred while updating the user." });
-    }
-  }
-
+      res.status(500).json({ error: "An error occurred while updating the user." });
+    }
+  }
 }

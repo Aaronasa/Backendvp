@@ -3,7 +3,7 @@ import { z, ZodType } from "zod";
 export class CityValidation {
   static readonly CREATE: ZodType = z.object({
     name: z.string().min(3).max(100),
-    image: z.string().min(5).max(200), // Path to the uploaded image
+    image: z.string().min(5).max(200)
   });
 
   static readonly UPDATE: ZodType = z.object({

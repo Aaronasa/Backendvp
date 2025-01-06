@@ -19,9 +19,9 @@ export const adminMiddleware = async (
   }
 
   // Split token if it's comma-separated and take the first value
-  if (token.includes(",")) {
+  if (token.includes(',')) {
     console.warn("adminMiddleware: Multiple tokens detected:", token);
-    token = token.split(",")[0].trim(); // Use the first token and trim whitespace
+    token = token.split(',')[0].trim(); // Use the first token and trim whitespace
   }
 
   console.log("adminMiddleware: Token after sanitization:", token);
@@ -29,31 +29,23 @@ export const adminMiddleware = async (
   try {
     const user = await prismaClient.user.findFirst({
       where: { token }, // Check token against database
-      include: { role: true }, // Include role data to validate admin role
+      include: { role: true }, // Include role data
     });
 
     console.log("adminMiddleware: User retrieved from database:", user);
 
     if (!user) {
-      console.error(
-        `Token mismatch or user not found. Received token: ${token}`
-      );
-      return next(
-        new ResponseError(403, "You are not authorized to access this resource")
-      );
+      console.error(`Token mismatch. Received token: ${token}`);
+      return next(new ResponseError(403, "You are not authorized to access this resource"));
     }
 
-    // Check if the user's role is "admin"
-    if (!user.role || user.role.name !== "admin") {
-      console.error(
-        `Access denied. User is not an admin. User role: ${user.role?.name}`
-      );
+    if (user.role?.name !== "admin") {
+      console.warn(`User is not an admin. Role: ${user.role?.name}`);
       return next(new ResponseError(403, "Access denied. Admins only."));
     }
 
-    // Attach user to request and proceed
-    req.user = user;
-    next();
+    req.user = user; // Attach user to request
+    next(); // Proceed to the next middleware/route
   } catch (error) {
     console.error("Error in adminMiddleware:", error);
     next(new ResponseError(500, "Internal Server Error"));
