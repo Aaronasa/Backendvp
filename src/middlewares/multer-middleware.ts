@@ -4,7 +4,7 @@
   // Configure multer for file uploads
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      const uploadDir = path.join(__dirname, 'uploads/images');
+      const uploadDir = path.join(__dirname, '../../uploads/images');
       cb(null, uploadDir); // Ensure this matches the directory created
     },
     filename: (req, file, cb) => {
