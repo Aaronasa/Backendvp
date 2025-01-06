@@ -1,5 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { ICreateReview, IDeleteReview, IReadReview, IReview, IUpdateReview } from "../model/review-model";
+import {
+  ICreateReview,
+  IDeleteReview,
+  IReadReview,
+  IReview,
+  IUpdateReview,
+} from "../model/review-model";
 
 const prisma = new PrismaClient();
 
@@ -34,29 +40,28 @@ export class ReviewService {
       });
       return reviews;
     }
-  }  
+  }
 
   async updateReview(data: IUpdateReview): Promise<IReview> {
     // We only pass the fields that are provided in the request (content and rating)
     const updateData: { content?: string; rating?: number } = {};
-  
+
     if (data.content) updateData.content = data.content;
     if (data.rating) updateData.rating = data.rating;
-  
+
     // Update the review using the provided fields
     const updatedReview = await prisma.review.update({
       where: { id: data.id },
       data: updateData,
     });
-  
+
     return updatedReview;
   }
-  
-  
+
 
   async deleteReview(data: IDeleteReview): Promise<IReview> {
     const deletedReview = await prisma.review.delete({
-      where: { id: data.id },
+      where: { id: data.id }, // Make sure `id` is coming from `data`
     });
     return deletedReview;
   }

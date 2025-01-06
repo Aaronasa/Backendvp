@@ -28,3 +28,7 @@ export interface IRestaurant {
   export interface IReadRestaurant {
     id?: number;
   }
+
+  export interface IRestaurantResponse {
+    data: IRestaurant[];
+  }

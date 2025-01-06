@@ -53,19 +53,25 @@ export class UserService {
   }
 
   // Update a user
-  async updateUser(data: IUpdateUser): Promise<IUser> {
-    const updatedUser = await prisma.user.update({
-      where: { id: data.id },
-      data: {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        token: data.token,
-        roleId: data.roleId,
-      },
+  async updateUser(userId: number, username: string, email: string): Promise<IUser> {
+    // Ensure that the email is unique
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
     });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new ResponseError(400, "Email is already taken.");
+    }
+
+    // Update the user in the database
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { username, email },
+    });
+
     return updatedUser;
   }
+
 
   // Delete a user
   async deleteUser(data: IDeleteUser): Promise<IUser> {

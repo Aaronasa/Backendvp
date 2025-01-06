@@ -12,6 +12,7 @@ import { UserService } from "../services/user-Service";
 import { UserRequest } from "../types/user-request";
 
 export class UserController {
+  
   // Create User
   static async createUser(req: Request, res: Response): Promise<void> {
     try {
@@ -46,7 +47,6 @@ export class UserController {
   }
 
   // userController.ts
-
   static async readUserByToken(req: UserRequest, res: Response): Promise<void> {
     try {
       // `req.user` is populated by `authMiddleware`
@@ -125,4 +125,31 @@ export class UserController {
       res.status(500).json({ error: "An error occurred while logging out." });
     }
   }
+  static async updateUser(req: UserRequest, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(400).json({ error: "User is not authenticated." });
+        return;
+      }
+
+      const { username, email }: IUpdateUser = req.body;
+      if (!username || !email) {
+        res.status(400).json({ error: "Username and email are required." });
+        return;
+      }
+
+      // Call service to update the user
+      const updatedUser = await new UserService().updateUser(userId, username, email);
+
+      res.status(200).json({
+        message: "User updated successfully.",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error("Error in updateUser:", error);
+      res.status(500).json({ error: "An error occurred while updating the user." });
+    }
+  }
+
 }

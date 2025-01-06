@@ -1,0 +1,45 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const admin_middleware_1 = require("../middlewares/admin-middleware"); // Optional: For admin-only routes
+const restaurant_Controller_1 = require("../controller/restaurant-Controller");
+const review_Controller_1 = require("../controller/review-Controller");
+const city_Controller_1 = require("../controller/city-Controller");
+const category_controller_1 = require("../controller/category-controller");
+const food_Controller_1 = require("../controller/food-Controller");
+const foodRestaurant_Controller_1 = require("../controller/foodRestaurant-Controller");
+const multer_middleware_1 = require("../middlewares/multer-middleware");
+const router = (0, express_1.Router)();
+// Admin Route: Read User (Can be customized further to only allow admin to view all users)
+// You can add more routes for admin-only access
+// router.get("/read", adminMiddleware, UserController.readUser);
+router.post('/restaurants/create', admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single('image'), restaurant_Controller_1.RestaurantController.createRestaurant);
+router.get('/restaurants/read', admin_middleware_1.adminMiddleware, restaurant_Controller_1.RestaurantController.readAllRestaurants);
+router.get('/restaurants/read/:id', admin_middleware_1.adminMiddleware, restaurant_Controller_1.RestaurantController.readRestaurantById);
+router.put('/restaurants/update', admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single('image'), restaurant_Controller_1.RestaurantController.updateRestaurant);
+router.delete('/restaurants/delete', admin_middleware_1.adminMiddleware, restaurant_Controller_1.RestaurantController.deleteRestaurant);
+router.get("/reviews/readall", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.readAllReviews);
+router.get("/reviews/restaurant/:restaurantId", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.readReviewsByRestaurant);
+router.put("/reviews/update", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.updateReview);
+router.delete("/reviews/delete", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.deleteReview);
+router.post("/city/create", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), city_Controller_1.CityController.createCity);
+router.get("/city/read/:id", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.readCityById);
+router.get("/city/readall", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.readAllCities);
+router.put("/city/update", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), city_Controller_1.CityController.updateCity);
+router.delete("/city/delete", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.deleteCity);
+router.post("/category/create", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.createCategory);
+router.get("/category/read/:id", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.readCategoryById);
+router.get("/category/readall", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.readAllCategories);
+router.put("/category/update", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.updateCategory);
+router.delete("/category/delete", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.deleteCategory);
+router.post("/food/create", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), food_Controller_1.FoodController.createFood);
+router.get("/food/read/:id", admin_middleware_1.adminMiddleware, food_Controller_1.FoodController.readFoodById);
+router.get("/food/readall", admin_middleware_1.adminMiddleware, food_Controller_1.FoodController.readAllFoods);
+router.put("/food/update", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), food_Controller_1.FoodController.updateFood);
+router.delete("/food/delete", admin_middleware_1.adminMiddleware, food_Controller_1.FoodController.deleteFood);
+router.post("/foodrestaurant/create", admin_middleware_1.adminMiddleware, foodRestaurant_Controller_1.FoodRestaurantController.createFoodRestaurant);
+router.get("/foodrestaurant/read/:id", admin_middleware_1.adminMiddleware, foodRestaurant_Controller_1.FoodRestaurantController.readFoodRestaurantById);
+router.get("/foodrestaurant/readall", admin_middleware_1.adminMiddleware, foodRestaurant_Controller_1.FoodRestaurantController.readAllFoodRestaurants);
+router.put("/foodrestaurant/update", admin_middleware_1.adminMiddleware, foodRestaurant_Controller_1.FoodRestaurantController.updateFoodRestaurant);
+router.delete("/foodrestaurant/delete", admin_middleware_1.adminMiddleware, foodRestaurant_Controller_1.FoodRestaurantController.deleteFoodRestaurant);
+exports.default = router;
