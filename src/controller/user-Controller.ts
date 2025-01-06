@@ -109,7 +109,7 @@ export class UserController {
   // Logout User
   static async logout(req: UserRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id; // Ensure the user is logged in
+      const userId = req.user?.id;
 
       if (userId === undefined) {
         res.status(400).json({ error: "User is not authenticated." });
@@ -128,7 +128,7 @@ export class UserController {
 
   static async deleteUser(req: UserRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id; // Get the authenticated user from the request
+      const userId = req.user?.id;
 
       if (!userId) {
         res.status(403).json({ error: "You are not authorized to delete this user." });

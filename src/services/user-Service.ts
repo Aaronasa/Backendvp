@@ -8,7 +8,6 @@ import {
 } from "../model/user-Model";
 import { PrismaClient } from "@prisma/client"; // Import Prisma Client
 import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
 import { ResponseError } from "../Error/response-error";
 
 const prisma = new PrismaClient();

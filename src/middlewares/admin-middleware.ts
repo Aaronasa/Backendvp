@@ -1,34 +1,53 @@
 import { NextFunction, Response } from "express";
 import { UserRequest } from "../types/user-request";
 import { ResponseError } from "../Error/response-error";
-import { prismaClient } from "../application/database";
+import { PrismaClient } from "@prisma/client";
 
-// Admin-only route - requires authentication and admin role
-export const adminMiddleware = async (req: UserRequest, res: Response, next: NextFunction) => {
-  const token = req.get("x-API-Token");
+const prismaClient = new PrismaClient();
 
-  if (token) {
+export const adminMiddleware = async (
+  req: UserRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  let token = req.get("x-API-Token"); // Get token from header
+  console.log("adminMiddleware: Token received:", token);
+
+  if (!token) {
+    console.error("No token provided in the request headers.");
+    return next(new ResponseError(401, "No token provided"));
+  }
+
+  // Split token if it's comma-separated and take the first value
+  if (token.includes(',')) {
+    console.warn("adminMiddleware: Multiple tokens detected:", token);
+    token = token.split(',')[0].trim(); // Use the first token and trim whitespace
+  }
+
+  console.log("adminMiddleware: Token after sanitization:", token);
+
+  try {
     const user = await prismaClient.user.findFirst({
-      where: {
-        token: token,
-      },
-      include: { // Include role to access the role's name
-        role: true,
-      },
+      where: { token }, // Check token against database
+      include: { role: true }, // Include role data
     });
 
-    if (user) {
-      if (user.role && user.role.name === "admin") { // Check if user has 'admin' role
-        req.user = user; // Attach user data to the request
-        next(); // Proceed to the next middleware or controller
-        return;
-      } else {
-        next(new ResponseError(403, "Access denied. Admins only."));
-      }
-    } else {
-      next(new ResponseError(403, "You are not authorized to access this resource"));
+    console.log("adminMiddleware: User retrieved from database:", user);
+
+    if (!user) {
+      console.error(`Token mismatch. Received token: ${token}`);
+      return next(new ResponseError(403, "You are not authorized to access this resource"));
     }
-  } else {
-    next(new ResponseError(401, "No token provided"));
+
+    if (user.role?.name !== "admin") {
+      console.warn(`User is not an admin. Role: ${user.role?.name}`);
+      return next(new ResponseError(403, "Access denied. Admins only."));
+    }
+
+    req.user = user; // Attach user to request
+    next(); // Proceed to the next middleware/route
+  } catch (error) {
+    console.error("Error in adminMiddleware:", error);
+    next(new ResponseError(500, "Internal Server Error"));
   }
 };
