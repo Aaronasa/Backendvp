@@ -5,10 +5,6 @@ const prisma = new PrismaClient();
 
 export class RestaurantService {
   async createRestaurant(data: ICreateRestaurant): Promise<IRestaurant> {
-    // const newRestaurant = await prisma.restaurant.create({
-    //   data,
-    // });
-    // return newRestaurant;
     try {
       console.log("Data being saved to the database:", data);
       const newRestaurant = await prisma.restaurant.create({ data });

@@ -12,14 +12,16 @@ import fs from 'fs';
 
 
 const app = express();
+console.log('Serving static files from:', path.join(__dirname, '../../uploads/images/'));
+app.use('/images', express.static(path.join(__dirname,  '../../uploads/images/')));
+// app.use(express.static('images'))
 
 app.use(express.json());
 app.use('/public', publicRouter); // Use the publicRouter directly
 app.use(errorMiddleware); // Error handling middleware
 app.use('/auth',authRouter);
 app.use('/admin',adminRoutes);
-console.log('Serving static files from:', path.join(__dirname, 'src', 'middlewares', 'uploads', 'images'));
-app.use('/uploads/images', express.static(path.join(__dirname, 'src', 'middlewares', 'uploads', 'images')));
+
 
 
 

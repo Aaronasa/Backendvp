@@ -18,5 +18,5 @@ app.use(error_middleware_1.errorMiddleware); // Error handling middleware
 app.use('/auth', authRoutes_1.default);
 app.use('/admin', adminRoutes_1.default);
 console.log('Serving static files from:', path_1.default.join(process.cwd(), 'src', 'middlewares', 'uploads', 'images'));
-app.use('/uploads/images', express_1.default.static(path_1.default.join(process.cwd(), 'src', 'middlewares', 'uploads', 'images')));
+app.use('/images', express_1.default.static(path_1.default.join(process.cwd(), '../../uploads/images')));
 exports.default = app;

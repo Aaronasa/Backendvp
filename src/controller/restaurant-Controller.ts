@@ -25,7 +25,7 @@ export class RestaurantController {
       const response: IRestaurant = await new RestaurantService().createRestaurant(request);
      
       const baseUrl = `${req.protocol}://${req.get("host")}`;
-      response.image = `${baseUrl}/uploads/images/${response.image}`;
+      response.image = `${baseUrl}/images/${response.image}`;
      
       res.status(201).json({
         message: 'Restaurant successfully created.',
@@ -56,7 +56,7 @@ export class RestaurantController {
       
         // Ensure the full image URL is included
         const baseUrl = `${req.protocol}://${req.get("host")}`;
-        restaurant.image = `${baseUrl}/uploads/images/${restaurant.image}`;
+        restaurant.image = `${baseUrl}/images/${restaurant.image}`;
 
         res.status(200).json({
             message: "Restaurant by id successfully retrieved.",
@@ -75,7 +75,7 @@ export class RestaurantController {
         const baseUrl = `${req.protocol}://${req.get('host')}`; // Dynamically build base URL
         const restaurantsWithImageURL = response.data.map((restaurant) => ({
             ...restaurant,
-            image:`${baseUrl}/uploads/images/${restaurant.image}`, // Ensure correct URL format
+            image:`${baseUrl}/images/${restaurant.image}`, // Ensure correct URL format
         }));
 
         res.status(200).json({
