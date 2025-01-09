@@ -40,6 +40,8 @@ model Restaurant {
   foodRestaurants FoodRestaurant[]
 }
 
+
+
 model Review {
   id           Int         @id @default(autoincrement())
   userId       Int
@@ -48,8 +50,8 @@ model Review {
   rating       Int
   createdAt    DateTime    @default(now())
 
-  user         User        @relation(fields: [userId], references: [id])
-  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 model City {
@@ -84,7 +86,7 @@ model FoodRestaurant {
   restaurantId Int
   price     Int
   food      Food @relation(fields: [foodId], references: [id])
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }
 
 
