@@ -4,7 +4,8 @@
   // Configure multer for file uploads
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, 'uploads/images'); // Save images in the 'uploads/images' directory
+      const uploadDir = path.join(__dirname, '../../uploads/images');
+      cb(null, uploadDir); // Save images in the 'uploads/images' directory
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;

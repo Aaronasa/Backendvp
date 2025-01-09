@@ -2,30 +2,31 @@ import { Request, Response } from "express";
 import { ICreateCity, IDeleteCity, IReadCity, ICity, IUpdateCity } from "../model/city-model";
 import { CityService } from "../services/city-Service";
 import { CityValidation } from "../validation/city-validation";
+import { upload } from "../config/multer-config";
 
-export class CityController {
-  static async createCity(req: Request, res: Response): Promise<void> {
-    try {
-      if (!req.file) {
-        throw new Error("Image file is required.");
+
+  export class CityController {
+
+    static async createCity(req: Request, res: Response): Promise<void> {
+        try {
+          if (!req.file) throw new Error('Image is required');
+          const imagePath = `/uploads/images/${req.file.filename}`;
+      
+          const request = {
+            ...CityValidation.CREATE.parse(req.body),
+            image: imagePath, // Add the uploaded image path
+          };
+      
+          const response: ICity = await new CityService().createCity(request);
+          res.status(201).json({
+            message: 'City successfully created.',
+            data: response,
+          });
+        } catch (error) {
+          console.error(error);
+          res.status(400).json({ error: error instanceof Error ? error.message : 'An error occurred while creating the restaurant.' });
+        }
       }
-
-      const imagePath = `/uploads/images/${req.file.filename}`;
-      const request = CityValidation.CREATE.parse({
-        ...req.body,
-        image: imagePath,
-      });
-
-      const response: ICity = await new CityService().createCity(request);
-      res.status(201).json({
-        message: "City successfully created.",
-        data: response,
-      });
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while creating the city." });
-    }
-  }
 
   static async readCityById(req: Request, res: Response): Promise<void> {
     try {

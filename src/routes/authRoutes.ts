@@ -7,19 +7,9 @@ import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
 import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
+import { upload } from "../config/multer-config";
 
 const router = Router();
-
-// // Protected Route: Update User (Requires Auth)
-// router.put("/update", authMiddleware, UserController.updateUser);
-
-// // Protected Route: Delete User (Requires Auth)
-// router.delete("/delete", authMiddleware, UserController.deleteUser);
-
-
-// router.post("/logout", UserController.logout);
-// router.post('/create', UserController.createUser);
-
 
 router.get('/read/all', authMiddleware, UserController.readAllUsers);
 router.post('/read', authMiddleware, UserController.readUserByToken);
@@ -36,7 +26,7 @@ router.get("/reviews/readall", authMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController.readReviewsByRestaurant);
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
 
-router.post("/city/create",authMiddleware, CityController.createCity);
+router.post("/city/create", upload.single('image'), CityController.createCity);
 router.get("/city/read/:id",authMiddleware, CityController.readCityById);
 router.get("/city/readall", authMiddleware, CityController.readAllCities);
 
