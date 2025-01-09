@@ -43,7 +43,7 @@ router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
 router.delete("/reviews/delete", authMiddleware, ReviewController.deleteReview);
 
-router.post("/city/create",authMiddleware, CityController.createCity);
+router.post("/city/create",authMiddleware, upload.single('image'), CityController.createCity);
 router.get("/city/read/:id",authMiddleware, CityController.readCityById);
 router.get("/city/readall", authMiddleware, CityController.readAllCities);
 
