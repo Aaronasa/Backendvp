@@ -7,31 +7,17 @@ import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
 import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
-import { upload } from "../middlewares/multer-middleware";
+import { upload } from "../config/multer-config";
 
 const router = Router();
 
-// // Protected Route: Update User (Requires Auth)
-// router.put("/update", authMiddleware, UserController.updateUser);
-
-// // Protected Route: Delete User (Requires Auth)
-// router.delete("/delete", authMiddleware, UserController.deleteUser);
-
-
-// router.post("/logout", UserController.logout);
-
-
-router.post('/create', UserController.createUser);
-
-
 router.get('/read/all', authMiddleware, UserController.readAllUsers);
 router.post('/read', authMiddleware, UserController.readUserByToken);
-router.put('/update/user', authMiddleware, UserController.updateUser);
 router.post('/logout', authMiddleware, UserController.logout)
 router.put('/update', authMiddleware, UserController.updateUser);
 router.delete('/delete', authMiddleware, UserController.deleteUser);
 
-router.post('/restaurants/create', authMiddleware, upload.single('image'), RestaurantController.createRestaurant);
+router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);  
 router.put('/restaurants/update/:id', authMiddleware, upload.single('image'), RestaurantController.updateRestaurant); 
@@ -44,9 +30,11 @@ router.get("/reviews/read/:id", authMiddleware, ReviewController.readReviewsById
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
 router.delete("/reviews/delete/:id", authMiddleware, ReviewController.deleteReview);
 
-router.post("/city/create",authMiddleware, upload.single('image'), CityController.createCity);
-router.get("/city/read/:id",authMiddleware, CityController.readCityById);
+router.post("/city/create", upload.single('image'), CityController.createCity);
 router.get("/city/readall", authMiddleware, CityController.readAllCities);
+router.get("/city/:id", authMiddleware, CityController.readCityById);
+router.put("/city/update/:id", authMiddleware, upload.single('image'), CityController.updateCity);
+router.delete("/city/delete/:id", authMiddleware, CityController.deleteCity);
 
 router.post("/category/create", authMiddleware, CategoryController.createCategory);
 router.get("/category/read/:id", authMiddleware, CategoryController.readCategoryById);

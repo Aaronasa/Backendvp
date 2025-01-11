@@ -31,10 +31,9 @@ router.put("/reviews/update/:id", adminMiddleware, ReviewController.updateReview
 router.delete("/reviews/delete/:id", adminMiddleware, ReviewController.deleteReview);
 
 router.post("/city/create", adminMiddleware, upload.single("image"), CityController.createCity);
-router.get("/city/read/:id", adminMiddleware, CityController.readCityById);
 router.get("/city/readall", adminMiddleware, CityController.readAllCities);
-router.put("/city/update", adminMiddleware, upload.single("image"), CityController.updateCity);
-router.delete("/city/delete", adminMiddleware, CityController.deleteCity);
+router.get("/city/:id", adminMiddleware, CityController.readCityById);
+router.put("/city/update/:id", adminMiddleware, upload.single('image'), CityController.updateCity);
 
 router.post("/category/create", adminMiddleware, CategoryController.createCategory);
 router.get("/category/read/:id", adminMiddleware, CategoryController.readCategoryById);

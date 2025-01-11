@@ -13,7 +13,9 @@ const path_1 = __importDefault(require("path"));
 const app = (0, express_1.default)();
 console.log('Serving static files from:', path_1.default.join(__dirname, '../../uploads/images/'));
 app.use('/images', express_1.default.static(path_1.default.join(__dirname, '../../uploads/images/')));
-// app.use(express.static('images'))
+// console.log('Serving static files from:', path_1.default.join(__dirname, '../uploads/images/'));
+// app.use('/images', express_1.default.static(path_1.default.join(__dirname, '../uploads/images/')));
+// // app.use(express.static('images'))
 app.use(express_1.default.json());
 app.use('/public', publicRoutes_1.default); // Use the publicRouter directly
 app.use(error_middleware_1.errorMiddleware); // Error handling middleware

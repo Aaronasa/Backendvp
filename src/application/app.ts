@@ -12,8 +12,8 @@ import fs from 'fs';
 
 
 const app = express();
-console.log('Serving static files from:', path.join(__dirname, '../../uploads/images/'));
-app.use('/images', express.static(path.join(__dirname,  '../../uploads/images/')));
+console.log('Serving static files from:', path.join(__dirname, '../uploads/images/'));
+app.use('/images', express.static(path.join(__dirname,  '../uploads/images/')));
 // app.use(express.static('images'))
 
 app.use(express.json());

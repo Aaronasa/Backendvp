@@ -14,13 +14,14 @@ async function main() {
   });
 
   // Enkripsi password admin
-  const hashedPassword = await bcrypt.hash('adminpassword', 10); // Ganti "adminpassword" dengan password pilihan Anda
+  const hashedPassword = await bcrypt.hash('adminpassword', 10);
 
   // Tambahkan pengguna admin
   await prisma.user.create({
     data: {
       username: 'admin',
       email: 'admin@gmail.com',
+      
       password: hashedPassword,
       roleId: 1,
     },

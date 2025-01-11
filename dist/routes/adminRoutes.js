@@ -24,10 +24,9 @@ router.get("/reviews/restaurant/:restaurantId", admin_middleware_1.adminMiddlewa
 router.put("/reviews/update", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.updateReview);
 router.delete("/reviews/delete", admin_middleware_1.adminMiddleware, review_Controller_1.ReviewController.deleteReview);
 router.post("/city/create", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), city_Controller_1.CityController.createCity);
-router.get("/city/read/:id", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.readCityById);
 router.get("/city/readall", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.readAllCities);
-router.put("/city/update", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single("image"), city_Controller_1.CityController.updateCity);
-router.delete("/city/delete", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.deleteCity);
+router.get("/city/:id", admin_middleware_1.adminMiddleware, city_Controller_1.CityController.readCityById);
+router.put("/city/update/:id", admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single('image'), city_Controller_1.CityController.updateCity);
 router.post("/category/create", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.createCategory);
 router.get("/category/read/:id", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.readCategoryById);
 router.get("/category/readall", admin_middleware_1.adminMiddleware, category_controller_1.CategoryController.readAllCategories);

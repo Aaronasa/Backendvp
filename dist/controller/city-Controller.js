@@ -16,11 +16,10 @@ class CityController {
     static createCity(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (!req.file) {
-                    throw new Error("Image file is required.");
-                }
-                const imagePath = `/uploads/images/${req.file.filename}`;
-                const request = city_validation_1.CityValidation.CREATE.parse(Object.assign(Object.assign({}, req.body), { image: imagePath }));
+                if (!req.file)
+                    throw new Error("Image is required");
+                const imagePath = req.file.filename;
+                const request = Object.assign(Object.assign({}, city_validation_1.CityValidation.CREATE.parse(req.body)), { image: imagePath });
                 const response = yield new city_Service_1.CityService().createCity(request);
                 res.status(201).json({
                     message: "City successfully created.",
@@ -29,74 +28,109 @@ class CityController {
             }
             catch (error) {
                 console.error(error);
-                res.status(400).json({ error: error instanceof Error ? error.message : "An error occurred while creating the city." });
-            }
-        });
-    }
-    static readCityById(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const params = city_validation_1.CityValidation.READ_BY_ID.parse({ id: parseInt(req.params.id, 10) });
-                const response = yield new city_Service_1.CityService().readCityById(params.id);
-                res.status(200).json({
-                    message: "City successfully retrieved.",
-                    data: response,
+                res
+                    .status(400)
+                    .json({
+                    error: error instanceof Error
+                        ? error.message
+                        : "An error occurred while creating the restaurant.",
                 });
-            }
-            catch (error) {
-                console.error(error);
-                res.status(400).json({ error: "An error occurred while retrieving the city." });
             }
         });
     }
     static readAllCities(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield new city_Service_1.CityService().readAllCities();
+                const response = yield new city_Service_1.CityService().getAllCities();
+                const baseUrl = `${req.protocol}://${req.get("host")}`; // Dynamically build base URL
+                const restaurantsWithImageURL = response.data.map((city) => (Object.assign(Object.assign({}, city), { image: `${baseUrl}/images/${city.image}` })));
                 res.status(200).json({
-                    message: "All cities successfully retrieved.",
-                    data: response,
+                    message: "All restaurants successfully retrieved.",
+                    data: restaurantsWithImageURL,
                 });
             }
             catch (error) {
-                console.error(error);
-                res.status(500).json({ error: "An error occurred while retrieving cities." });
+                console.error("Error fetching restaurants:", error);
+                res
+                    .status(500)
+                    .json({ error: "An error occurred while retrieving restaurants." });
+            }
+        });
+    }
+    static readCityById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id } = req.params;
+                const city = yield new city_Service_1.CityService().getCityById(id);
+                if (!city) {
+                    res.status(404).json({
+                        message: "City not found.",
+                    });
+                    return;
+                }
+                const baseUrl = `${req.protocol}://${req.get("host")}`; // Dynamically build base URL
+                const cityWithImageURL = Object.assign(Object.assign({}, city), { image: `${baseUrl}/images/${city.image}` });
+                res.status(200).json({
+                    message: "City successfully retrieved.",
+                    data: cityWithImageURL,
+                });
+            }
+            catch (error) {
+                console.error("Error fetching city by ID:", error);
+                res.status(500).json({
+                    error: "An error occurred while retrieving the city.",
+                });
             }
         });
     }
     static updateCity(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let imagePath = undefined;
-                if (req.file) {
-                    imagePath = `/uploads/images/${req.file.filename}`;
+                const id = parseInt(req.params.id, 10); // Konversi ID dari string ke number
+                if (isNaN(id)) {
+                    throw new Error("Invalid ID format. ID must be a number.");
                 }
-                const request = city_validation_1.CityValidation.UPDATE.parse(Object.assign(Object.assign({}, req.body), (imagePath && { image: imagePath })));
-                const response = yield new city_Service_1.CityService().updateCity(request);
+                const imagePath = req.file ? req.file.filename : undefined;
+                const updateData = Object.assign(Object.assign({}, city_validation_1.CityValidation.UPDATE.parse(req.body)), (imagePath && { image: imagePath }));
+                const updatedCity = yield new city_Service_1.CityService().updateCity(id, updateData);
+                if (!updatedCity) {
+                    res.status(404).json({ message: "City not found." });
+                    return;
+                }
                 res.status(200).json({
                     message: "City successfully updated.",
-                    data: response,
+                    data: updatedCity,
                 });
             }
             catch (error) {
-                console.error(error);
-                res.status(400).json({ error: "An error occurred while updating the city." });
+                console.error("Error updating city:", error);
+                res.status(400).json({
+                    error: error instanceof Error ? error.message : "An error occurred.",
+                });
             }
         });
     }
     static deleteCity(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const request = city_validation_1.CityValidation.DELETE.parse(req.body);
-                const response = yield new city_Service_1.CityService().deleteCity(request);
+                const id = parseInt(req.params.id, 10); // Convert ID from string to number
+                if (isNaN(id)) {
+                    throw new Error("Invalid ID format. ID must be a number.");
+                }
+                const deletedCity = yield new city_Service_1.CityService().deleteCity(id);
+                if (!deletedCity) {
+                    res.status(404).json({ message: "City not found." });
+                    return;
+                }
                 res.status(200).json({
                     message: "City successfully deleted.",
-                    data: response,
                 });
             }
             catch (error) {
-                console.error(error);
-                res.status(400).json({ error: "An error occurred while deleting the city." });
+                console.error("Error deleting city:", error);
+                res.status(400).json({
+                    error: error instanceof Error ? error.message : "An error occurred.",
+                });
             }
         });
     }
