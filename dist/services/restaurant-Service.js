@@ -15,10 +15,6 @@ const prisma = new client_1.PrismaClient();
 class RestaurantService {
     createRestaurant(data) {
         return __awaiter(this, void 0, void 0, function* () {
-            // const newRestaurant = await prisma.restaurant.create({
-            //   data,
-            // });
-            // return newRestaurant;
             try {
                 console.log("Data being saved to the database:", data);
                 const newRestaurant = yield prisma.restaurant.create({ data });
@@ -37,13 +33,15 @@ class RestaurantService {
                 console.log("Service: Fetching restaurant with ID:", id); // Log the input ID
                 const restaurant = yield prisma.restaurant.findUnique({
                     where: { id },
-                    include: { reviews: true, foodRestaurants: true },
+                    // include: {
+                    //    reviews: true, foodRestaurants: true 
+                    //   },
                 });
                 if (!restaurant) {
                     console.warn("Service: No restaurant found with ID:", id); // Log if no result is found
                     throw new Error(`Restaurant with ID ${id} not found`);
                 }
-                console.log("Service: Successfully fetched restaurant:", restaurant); // Log the result
+                console.log("Service: Successfully fetched by id restaurant:", restaurant); // Log the result
                 return restaurant;
             }
             catch (error) {
@@ -61,7 +59,7 @@ class RestaurantService {
                 //     include: { reviews: true, foodRestaurants: true },
                 // }
                 );
-                console.log("Service: Successfully fetched restaurants:", restaurants);
+                console.log("Service: Successfully fetched all restaurants:", restaurants);
                 return { data: restaurants };
             }
             catch (error) {

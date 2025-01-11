@@ -19,10 +19,12 @@ class RestaurantController {
                 console.log("Uploaded file:", req.file);
                 if (!req.file)
                     throw new Error('Image is required');
-                const imagePath = `${req.protocol}://${req.get('host')}/uploads/images/${req.file.filename}`;
+                const imagePath = req.file.filename;
                 const request = Object.assign(Object.assign({}, restaurant_validation_1.RestaurantValidation.CREATE.parse(req.body)), { image: imagePath });
                 console.log("Parsed request data:", request);
                 const response = yield new restaurant_Service_1.RestaurantService().createRestaurant(request);
+                const baseUrl = `${req.protocol}://${req.get("host")}`;
+                response.image = `${baseUrl}/images/${response.image}`;
                 res.status(201).json({
                     message: 'Restaurant successfully created.',
                     data: response,
@@ -37,18 +39,26 @@ class RestaurantController {
     static readRestaurantById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // Validate the request params
                 const params = restaurant_validation_1.RestaurantValidation.READ_BY_ID.parse({ id: parseInt(req.params.id, 10) });
-                // Proceed with service logic
-                const response = yield new restaurant_Service_1.RestaurantService().readRestaurantById(params.id);
+                const restaurant = yield new restaurant_Service_1.RestaurantService().readRestaurantById(params.id);
+                console.log("Backend Response:", {
+                    id: restaurant.id,
+                    name: restaurant.name,
+                    address: restaurant.address,
+                    phone: restaurant.phone,
+                    image: restaurant.image
+                });
+                // Ensure the full image URL is included
+                const baseUrl = `${req.protocol}://${req.get("host")}`;
+                restaurant.image = `${baseUrl}/images/${restaurant.image}`;
                 res.status(200).json({
-                    message: "Restaurant successfully retrieved.",
-                    data: response,
+                    message: "Restaurant by id successfully retrieved.",
+                    data: restaurant,
                 });
             }
             catch (error) {
-                console.error(error);
-                res.status(400).json({ error: 'An error occurred while retrieving the restaurant.' });
+                console.error("Error retrieving restaurant:", error);
+                res.status(400).json({ error: "An error occurred while retrieving the restaurant." });
             }
         });
     }
@@ -57,7 +67,7 @@ class RestaurantController {
             try {
                 const response = yield new restaurant_Service_1.RestaurantService().readAllRestaurants();
                 const baseUrl = `${req.protocol}://${req.get('host')}`; // Dynamically build base URL
-                const restaurantsWithImageURL = response.data.map((restaurant) => (Object.assign(Object.assign({}, restaurant), { image: `${baseUrl}/uploads/images/${restaurant.image}` })));
+                const restaurantsWithImageURL = response.data.map((restaurant) => (Object.assign(Object.assign({}, restaurant), { image: `${baseUrl}/images/${restaurant.image}` })));
                 res.status(200).json({
                     message: 'All restaurants successfully retrieved.',
                     data: restaurantsWithImageURL,
@@ -72,7 +82,7 @@ class RestaurantController {
     static updateRestaurant(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const imagePath = req.file ? `/uploads/images/${req.file.filename}` : undefined;
+                const imagePath = req.file ? req.file.filename : undefined; // Save only the filename in the database
                 const request = Object.assign(Object.assign({}, restaurant_validation_1.RestaurantValidation.UPDATE.parse(req.body)), (imagePath ? { image: imagePath } : {}));
                 const response = yield new restaurant_Service_1.RestaurantService().updateRestaurant(request);
                 res.status(200).json({

@@ -27,3 +27,7 @@ export interface IReview {
     id?: number;
     restaurantId?: number;
   }
+
+  export interface IReviewResponse {
+    data: IReview[];
+  }

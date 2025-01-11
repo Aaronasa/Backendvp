@@ -29,16 +29,41 @@ export class ReviewController {
     }
   }
 
-  static async readReviewsByRestaurant(
-    req: Request,
-    res: Response
-  ): Promise<void> {
+  static async readReviewsById(req: Request,res: Response): Promise<void> {
+    try{
+      const params = ReviewValidation.READ_BY_ID.parse({
+        id: parseInt(req.params.id, 10),
+      });
+
+      const review = await new ReviewService().readReviewById(params.id);
+      console.log("Backend Response:", {
+        id: review.id,
+        content: review.content,
+        rating: review.rating,
+        userId: review.userId,
+        restaurantId: review.restaurantId,
+      });
+      res.status(200).json({
+        message: "Review successfully retrieved.",
+        data: review,
+      });
+    } catch (error) {
+      console.error("Error retrieving review:", error);
+      res
+        .status(400)
+        .json({ error: "An error occurred while retrieving the review." });
+    }
+  }
+
+  static async readReviewsByRestaurant(req: Request,res: Response): Promise<void> {
     try {
       const restaurantId = ReviewValidation.READ.parse({
         restaurantId: parseInt(req.params.restaurantId, 10),
-      }); // Validate restaurantId
-      const response = await new ReviewService().readReview(restaurantId);
-
+      });
+      if (isNaN(restaurantId)) {
+        throw new Error("Invalid restaurant ID : " + restaurantId);
+      } // Validate restaurantId
+      const response = await new ReviewService().readReviewByRestaurantId(restaurantId);
       if (Array.isArray(response)) {
         res.status(200).json({
           message: "Reviews successfully retrieved for restaurant.",
@@ -65,7 +90,7 @@ export class ReviewController {
   static async readAllReviews(req: Request, res: Response): Promise<void> {
     try {
       const response: IReview | IReview[] =
-        await new ReviewService().readReview({});
+        await new ReviewService().readAllReviews();
 
       // Check if the response is an array or a single review
       if (Array.isArray(response)) {
@@ -76,7 +101,7 @@ export class ReviewController {
       } else {
         res.status(200).json({
           message: "Review successfully retrieved.",
-          data: [response], // Wrap the single review in an array
+          data: response, // Wrap the single review in an array
         });
       }
     } catch (error) {
@@ -113,7 +138,8 @@ export class ReviewController {
 
   static async deleteReview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.body; // Get review ID from request body, not params
+      const { id } = req.params; // Get review ID from request body, not params
+      if(!id) throw new Error("Invalid review ID");
       const request: IDeleteReview = { id: parseInt(id, 10) }; // Create the delete request
 
       // Call the service to delete the review

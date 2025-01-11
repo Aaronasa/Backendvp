@@ -74,6 +74,7 @@ class UserController {
                         id: user.id,
                         username: user.username,
                         email: user.email,
+                        password: user.password,
                         token: user.token,
                     },
                 });
@@ -92,7 +93,7 @@ class UserController {
                 const response = yield new user_Service_1.UserService().login(email, password);
                 res.status(200).json({
                     message: "Login successful.",
-                    data: response, // User data returned along with token
+                    data: response,
                 });
             }
             catch (error) {
@@ -114,9 +115,8 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id; // Ensure the user is logged in
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
                 if (userId === undefined) {
-                    // If userId is undefined, return an appropriate error response
                     res.status(400).json({ error: "User is not authenticated." });
                     return;
                 }
@@ -128,6 +128,56 @@ class UserController {
             catch (error) {
                 console.error(error);
                 res.status(500).json({ error: "An error occurred while logging out." });
+            }
+        });
+    }
+    static deleteUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                if (!userId) {
+                    res.status(403).json({ error: "You are not authorized to delete this user." });
+                    return;
+                }
+                const userService = new user_Service_1.UserService();
+                // Call the service to delete the user
+                const deletedUser = yield userService.deleteUser(userId);
+                res.status(200).json({
+                    message: "User deleted successfully.",
+                    data: deletedUser,
+                });
+            }
+            catch (error) {
+                console.error("Error in deleteUser:", error);
+                res.status(500).json({ error: "An error occurred while deleting the user." });
+            }
+        });
+    }
+    static updateUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                if (!userId) {
+                    res.status(400).json({ error: "User is not authenticated." });
+                    return;
+                }
+                const { username, email } = req.body;
+                if (!username || !email) {
+                    res.status(400).json({ error: "Username and email are required." });
+                    return;
+                }
+                // Call service to update the user
+                const updatedUser = yield new user_Service_1.UserService().updateUser(userId, username, email);
+                res.status(200).json({
+                    message: "User updated successfully.",
+                    data: updatedUser,
+                });
+            }
+            catch (error) {
+                console.error("Error in updateUser:", error);
+                res.status(500).json({ error: "An error occurred while updating the user." });
             }
         });
     }

@@ -56,7 +56,12 @@ export class RestaurantService {
   async updateRestaurant(data: IUpdateRestaurant): Promise<IRestaurant> {
     const updatedRestaurant = await prisma.restaurant.update({
       where: { id: data.id },
-      data,
+      data:{
+        ...(data.name && { name: data.name }),
+        ...(data.address && { address: data.address }),
+        ...(data.phone && { phone: data.phone }),
+        ...(data.image && { image: data.image }),
+      }
     });
     return updatedRestaurant;
   }

@@ -34,14 +34,15 @@ router.delete('/delete', authMiddleware, UserController.deleteUser);
 router.post('/restaurants/create', authMiddleware, upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);  
-router.put('/restaurants/update', authMiddleware, upload.single('image'), RestaurantController.updateRestaurant); 
-router.delete('/restaurants/delete', authMiddleware, RestaurantController.deleteRestaurant);
+router.put('/restaurants/update/:id', authMiddleware, upload.single('image'), RestaurantController.updateRestaurant); 
+router.delete('/restaurants/delete/:id', authMiddleware, RestaurantController.deleteRestaurant);
 
 router.post("/reviews/Create", authMiddleware, ReviewController.createReview);
 router.get("/reviews/readall", authMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController.readReviewsByRestaurant);
+router.get("/reviews/read/:id", authMiddleware, ReviewController.readReviewsById);
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
-router.delete("/reviews/delete", authMiddleware, ReviewController.deleteReview);
+router.delete("/reviews/delete/:id", authMiddleware, ReviewController.deleteReview);
 
 router.post("/city/create",authMiddleware, upload.single('image'), CityController.createCity);
 router.get("/city/read/:id",authMiddleware, CityController.readCityById);

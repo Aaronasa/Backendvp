@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
+const user_Controller_1 = require("../controller/user-Controller");
 const admin_middleware_1 = require("../middlewares/admin-middleware"); // Optional: For admin-only routes
 const restaurant_Controller_1 = require("../controller/restaurant-Controller");
 const review_Controller_1 = require("../controller/review-Controller");
@@ -12,7 +13,7 @@ const multer_middleware_1 = require("../middlewares/multer-middleware");
 const router = (0, express_1.Router)();
 // Admin Route: Read User (Can be customized further to only allow admin to view all users)
 // You can add more routes for admin-only access
-// router.get("/read", adminMiddleware, UserController.readUser);
+router.get("/read", admin_middleware_1.adminMiddleware, user_Controller_1.UserController.readAllUsers);
 router.post('/restaurants/create', admin_middleware_1.adminMiddleware, multer_middleware_1.upload.single('image'), restaurant_Controller_1.RestaurantController.createRestaurant);
 router.get('/restaurants/read', admin_middleware_1.adminMiddleware, restaurant_Controller_1.RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', admin_middleware_1.adminMiddleware, restaurant_Controller_1.RestaurantController.readRestaurantById);
