@@ -73,9 +73,9 @@ model Food {
   description String @db.Text
   ingredients String @db.Text
   image     String @db.VarChar(100)
-  category  Category @relation(fields: [categoryId], references: [id])
+  category  Category @relation(fields: [categoryId], references: [id],onDelete: Cascade)
   categoryId Int
-  city      City @relation(fields: [cityId], references: [id])
+  city      City @relation(fields: [cityId], references: [id],onDelete: Cascade)
   cityId    Int
   foodRestaurants FoodRestaurant[]
 }
