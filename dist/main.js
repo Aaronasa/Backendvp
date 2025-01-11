@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./application/app"));
 const logging_1 = require("./application/logging");
 app_1.default.listen(3000, () => {
-    logging_1.Logger.info("Listening on http://localhost:3000/");
+    logging_1.Logger.info('Server is running on port 3000');
 });

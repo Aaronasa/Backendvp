@@ -58,26 +58,37 @@ class UserService {
         });
     }
     // Update a user
-    updateUser(data) {
+    updateUser(userId, username, email) {
         return __awaiter(this, void 0, void 0, function* () {
+            // Ensure that the email is unique
+            const existingUser = yield prisma.user.findUnique({
+                where: { email },
+            });
+            if (existingUser && existingUser.id !== userId) {
+                throw new response_error_1.ResponseError(400, "Email is already taken.");
+            }
+            // Update the user in the database
             const updatedUser = yield prisma.user.update({
-                where: { id: data.id },
-                data: {
-                    username: data.username,
-                    email: data.email,
-                    password: data.password,
-                    token: data.token,
-                    roleId: data.roleId,
-                },
+                where: { id: userId },
+                data: { username, email },
             });
             return updatedUser;
         });
     }
+    getUserById(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const user = yield prisma.user.findUnique({
+                where: { id: userId },
+                include: { role: true, reviews: true }, // Include any related data
+            });
+            return user;
+        });
+    }
     // Delete a user
-    deleteUser(data) {
+    deleteUser(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const deletedUser = yield prisma.user.delete({
-                where: { id: data.id },
+                where: { id: userId },
             });
             return deletedUser;
         });
@@ -91,10 +102,16 @@ class UserService {
             if (!user) {
                 throw new response_error_1.ResponseError(400, "Invalid email or password");
             }
+            const newToken = this.generateToken(32);
             const isPasswordCorrect = yield bcrypt_1.default.compare(password, user.password);
             if (!isPasswordCorrect) {
                 throw new response_error_1.ResponseError(400, "Invalid email or password");
             }
+            user.token = newToken;
+            yield prisma.user.update({
+                where: { id: user.id },
+                data: { token: newToken },
+            });
             console.log(`User ${email} logged in. Token: ${user.token}`); // Log token
             return user;
         });
@@ -108,6 +125,15 @@ class UserService {
             });
             return "Logged out successfully";
         });
+    }
+    generateToken(length) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let newtoken = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            newtoken += characters[randomIndex];
+        }
+        return newtoken;
     }
 }
 exports.UserService = UserService;

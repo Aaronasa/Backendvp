@@ -7,9 +7,9 @@ export class CityValidation {
   });
 
   static readonly UPDATE: ZodType = z.object({
-    id: z.number().positive(),
-    name: z.string().min(3).max(100).optional(),
-    image: z.string().min(5).max(200).optional(),
+    name: z.string().optional(),
+    image: z.string().optional(),
+    
   });
 
   static readonly DELETE: ZodType = z.object({

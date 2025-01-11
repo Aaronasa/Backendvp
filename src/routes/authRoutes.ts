@@ -27,8 +27,10 @@ router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
 
 router.post("/city/create", upload.single('image'), CityController.createCity);
-router.get("/city/read/:id",authMiddleware, CityController.readCityById);
 router.get("/city/readall", authMiddleware, CityController.readAllCities);
+router.get("/city/:id", authMiddleware, CityController.readCityById);
+router.put("/city/update/:id", authMiddleware, upload.single('image'), CityController.updateCity);
+router.delete("/city/delete/:id", authMiddleware, CityController.deleteCity);
 
 router.post("/category/create", authMiddleware, CategoryController.createCategory);
 router.get("/category/read/:id", authMiddleware, CategoryController.readCategoryById);

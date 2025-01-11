@@ -22,4 +22,8 @@ export interface ICity {
   export interface IReadCity {
     id?: number;
   }
+
+  export interface ICityResponse {
+    data: ICity[];
+  }
   

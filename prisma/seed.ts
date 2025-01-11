@@ -21,6 +21,7 @@ async function main() {
     data: {
       username: 'admin',
       email: 'admin@gmail.com',
+      
       password: hashedPassword,
       roleId: 1,
     },

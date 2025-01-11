@@ -9,7 +9,7 @@ const path_1 = __importDefault(require("path"));
 // Configure multer for file uploads
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = path_1.default.join(__dirname, 'uploads/images');
+        const uploadDir = path_1.default.join(__dirname, '../../../uploads/images');
         cb(null, uploadDir); // Ensure this matches the directory created
     },
     filename: (req, file, cb) => {

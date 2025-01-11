@@ -69,7 +69,7 @@ class ReviewService {
     deleteReview(data) {
         return __awaiter(this, void 0, void 0, function* () {
             const deletedReview = yield prisma.review.delete({
-                where: { id: data.id },
+                where: { id: data.id }, // Make sure `id` is coming from `data`
             });
             return deletedReview;
         });

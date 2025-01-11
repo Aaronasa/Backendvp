@@ -21,40 +21,82 @@ class CityService {
             return newCity;
         });
     }
-    readCityById(id) {
+    getCityById(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const city = yield prisma.city.findUnique({
-                where: { id },
-                include: { foods: true }, // Adjust if foods relations are needed
-            });
-            if (!city)
-                throw new Error(`City with ID ${id} not found`);
-            return city;
+            try {
+                const cityId = parseInt(id, 10); // Konversi id dari string ke number
+                if (isNaN(cityId)) {
+                    throw new Error('Invalid ID format. ID must be a number.');
+                }
+                const city = yield prisma.city.findUnique({
+                    where: { id: cityId },
+                });
+                if (!city) {
+                    console.log(`City with ID ${id} not found.`);
+                    return null;
+                }
+                return city;
+            }
+            catch (error) {
+                console.error(`Error fetching city with ID ${id}:`, error);
+                throw new Error('Unable to fetch city.');
+            }
         });
     }
-    readAllCities() {
+    getAllCities() {
         return __awaiter(this, void 0, void 0, function* () {
-            const cities = yield prisma.city.findMany({
-                include: { foods: true }, // Adjust if foods relations are needed
-            });
-            return cities;
+            try {
+                const cities = yield prisma.city.findMany(
+                // include: { foods: true }, // Include related foods
+                );
+                console.log("All Cities: ", cities);
+                return { data: cities };
+            }
+            catch (error) {
+                console.error('Error fetching cities:', error);
+                throw new Error('Unable to fetch cities.');
+            }
         });
     }
-    updateCity(data) {
+    updateCity(id, data) {
         return __awaiter(this, void 0, void 0, function* () {
-            const updatedCity = yield prisma.city.update({
-                where: { id: data.id },
-                data,
-            });
-            return updatedCity;
+            try {
+                const updatedCity = yield prisma.city.update({
+                    where: { id },
+                    data,
+                });
+                console.log(`City with ID ${id} updated successfully.`);
+                return updatedCity;
+            }
+            catch (error) {
+                console.error(`Error updating city with ID ${id}:`, error);
+                // Handle specific error jika city tidak ditemukan
+                if (error instanceof Error && error.code === "P2025") {
+                    console.error(`City with ID ${id} does not exist.`);
+                    return null;
+                }
+                throw new Error("Unable to update city.");
+            }
         });
     }
-    deleteCity(data) {
+    deleteCity(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            const deletedCity = yield prisma.city.delete({
-                where: { id: data.id },
-            });
-            return deletedCity;
+            try {
+                const deletedCity = yield prisma.city.delete({
+                    where: { id },
+                });
+                console.log(`City with ID ${id} deleted successfully.`);
+                return deletedCity;
+            }
+            catch (error) {
+                console.error(`Error deleting city with ID ${id}:`, error);
+                // Handle specific error if city not found
+                if (error instanceof Error && error.code === "P2025") {
+                    console.error(`City with ID ${id} does not exist.`);
+                    return null;
+                }
+                throw new Error("Unable to delete city.");
+            }
         });
     }
 }
