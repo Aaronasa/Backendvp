@@ -20,13 +20,15 @@ router.get("/read", adminMiddleware, UserController.readAllUsers);
 router.post('/restaurants/create', adminMiddleware, upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', adminMiddleware, RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', adminMiddleware, RestaurantController.readRestaurantById);
-router.put('/restaurants/update', adminMiddleware, upload.single('image'), RestaurantController.updateRestaurant);
-router.delete('/restaurants/delete', adminMiddleware, RestaurantController.deleteRestaurant);
+router.put('/restaurants/update/:id', adminMiddleware, upload.single('image'), RestaurantController.updateRestaurant);
+router.delete('/restaurants/delete/:id', adminMiddleware, RestaurantController.deleteRestaurant);
 
+router.post("/reviews/Create", adminMiddleware, ReviewController.createReview);
 router.get("/reviews/readall", adminMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", adminMiddleware, ReviewController.readReviewsByRestaurant);
-router.put("/reviews/update", adminMiddleware, ReviewController.updateReview);
-router.delete("/reviews/delete", adminMiddleware, ReviewController.deleteReview);
+router.get("/reviews/read/:id", adminMiddleware, ReviewController.readReviewsById);
+router.put("/reviews/update/:id", adminMiddleware, ReviewController.updateReview);
+router.delete("/reviews/delete/:id", adminMiddleware, ReviewController.deleteReview);
 
 router.post("/city/create", adminMiddleware, upload.single("image"), CityController.createCity);
 router.get("/city/read/:id", adminMiddleware, CityController.readCityById);
