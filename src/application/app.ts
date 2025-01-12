@@ -8,13 +8,9 @@ import path from "path";
 import fs from 'fs';
 // import { protectedRouter } from "../routers/protected-router";
 
-
-
-
 const app = express();
 console.log('Serving static files from:', path.join(__dirname, '../uploads/images/'));
 app.use('/images', express.static(path.join(__dirname,  '../uploads/images/')));
-// app.use(express.static('images'))
 
 app.use(express.json());
 app.use('/public', publicRouter); // Use the publicRouter directly
