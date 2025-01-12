@@ -7,7 +7,8 @@ import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
 import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
-import { upload } from "../config/multer-config";
+// import { upload } from "../config/multer-config";
+import { upload } from "../middlewares/multer-middleware";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.post('/logout', authMiddleware, UserController.logout)
 router.put('/update', authMiddleware, UserController.updateUser);
 router.delete('/delete', authMiddleware, UserController.deleteUser);
 
-router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
+router.post('/restaurants/create', authMiddleware,upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);  
 router.put('/restaurants/update/:id', authMiddleware, upload.single('image'), RestaurantController.updateRestaurant); 
