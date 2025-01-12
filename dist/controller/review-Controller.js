@@ -38,8 +38,11 @@ class ReviewController {
             try {
                 const restaurantId = review_validation_1.ReviewValidation.READ.parse({
                     restaurantId: parseInt(req.params.restaurantId, 10),
-                }); // Validate restaurantId
-                const response = yield new review_Service_1.ReviewService().readReview(restaurantId);
+                });
+                if (isNaN(restaurantId)) {
+                    throw new Error("Invalid restaurant ID");
+                } // Validate restaurantId
+                const response = yield new review_Service_1.ReviewService().readReviewByRestaurantId(restaurantId);
                 if (Array.isArray(response)) {
                     res.status(200).json({
                         message: "Reviews successfully retrieved for restaurant.",
@@ -67,7 +70,7 @@ class ReviewController {
     static readAllReviews(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield new review_Service_1.ReviewService().readReview({});
+                const response = yield new review_Service_1.ReviewService().readAllReviews();
                 // Check if the response is an array or a single review
                 if (Array.isArray(response)) {
                     res.status(200).json({

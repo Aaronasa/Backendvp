@@ -26,4 +26,8 @@ export class ReviewValidation {
     id: z.number().positive().optional(), // Optional but must be positive if provided
     restaurantId: z.number().positive().optional(), // Optional but must be positive if provided
   });
+
+  static readonly READ_BY_ID: ZodType = z.object({
+    id: z.number().positive(),
+  });
 }

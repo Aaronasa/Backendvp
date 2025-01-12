@@ -11,18 +11,26 @@ const food_Controller_1 = require("../controller/food-Controller");
 const foodRestaurant_Controller_1 = require("../controller/foodRestaurant-Controller");
 const multer_config_1 = require("../config/multer-config");
 const router = (0, express_1.Router)();
+
 router.get('/read/all', auth_middleware_1.authMiddleware, user_Controller_1.UserController.readAllUsers);
 router.post('/read', auth_middleware_1.authMiddleware, user_Controller_1.UserController.readUserByToken);
+router.put('/update/user', auth_middleware_1.authMiddleware, user_Controller_1.UserController.updateUser);
 router.post('/logout', auth_middleware_1.authMiddleware, user_Controller_1.UserController.logout);
 router.put('/update', auth_middleware_1.authMiddleware, user_Controller_1.UserController.updateUser);
 router.delete('/delete', auth_middleware_1.authMiddleware, user_Controller_1.UserController.deleteUser);
-router.post('/restaurants/create', auth_middleware_1.authMiddleware, restaurant_Controller_1.RestaurantController.createRestaurant);
+
+router.post('/restaurants/create', auth_middleware_1.authMiddleware, multer_middleware_1.upload.single('image'), restaurant_Controller_1.RestaurantController.createRestaurant);
 router.get('/restaurants/read', auth_middleware_1.authMiddleware, restaurant_Controller_1.RestaurantController.readAllRestaurants);
 router.get('/restaurants/read/:id', auth_middleware_1.authMiddleware, restaurant_Controller_1.RestaurantController.readRestaurantById);
+router.put('/restaurants/update', auth_middleware_1.authMiddleware, multer_middleware_1.upload.single('image'), restaurant_Controller_1.RestaurantController.updateRestaurant);
+router.delete('/restaurants/delete', auth_middleware_1.authMiddleware, restaurant_Controller_1.RestaurantController.deleteRestaurant);
+
 router.post("/reviews/Create", auth_middleware_1.authMiddleware, review_Controller_1.ReviewController.createReview);
 router.get("/reviews/readall", auth_middleware_1.authMiddleware, review_Controller_1.ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", auth_middleware_1.authMiddleware, review_Controller_1.ReviewController.readReviewsByRestaurant);
 router.put("/reviews/update/:id", auth_middleware_1.authMiddleware, review_Controller_1.ReviewController.updateReview);
+router.delete("/reviews/delete", auth_middleware_1.authMiddleware, review_Controller_1.ReviewController.deleteReview);
+
 router.post("/city/create", multer_config_1.upload.single('image'), city_Controller_1.CityController.createCity);
 router.get("/city/readall", auth_middleware_1.authMiddleware, city_Controller_1.CityController.readAllCities);
 router.get("/city/:id", auth_middleware_1.authMiddleware, city_Controller_1.CityController.readCityById);

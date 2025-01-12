@@ -7,7 +7,8 @@ import { CityController } from "../controller/city-Controller";
 import { CategoryController } from "../controller/category-controller";
 import { FoodController } from "../controller/food-Controller";
 import { FoodRestaurantController } from "../controller/foodRestaurant-Controller";
-import { upload } from "../config/multer-config";
+// import { upload } from "../config/multer-config";
+import { upload } from "../middlewares/multer-middleware";
 
 const router = Router();
 
@@ -17,14 +18,18 @@ router.post('/logout', authMiddleware, UserController.logout)
 router.put('/update', authMiddleware, UserController.updateUser);
 router.delete('/delete', authMiddleware, UserController.deleteUser);
 
-router.post('/restaurants/create', authMiddleware, RestaurantController.createRestaurant);
+router.post('/restaurants/create', authMiddleware,upload.single('image'), RestaurantController.createRestaurant);
 router.get('/restaurants/read', authMiddleware, RestaurantController.readAllRestaurants);
-router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);
+router.get('/restaurants/read/:id', authMiddleware, RestaurantController.readRestaurantById);  
+router.put('/restaurants/update/:id', authMiddleware, upload.single('image'), RestaurantController.updateRestaurant); 
+router.delete('/restaurants/delete/:id', authMiddleware, RestaurantController.deleteRestaurant);
 
 router.post("/reviews/Create", authMiddleware, ReviewController.createReview);
 router.get("/reviews/readall", authMiddleware, ReviewController.readAllReviews);
 router.get("/reviews/restaurant/:restaurantId", authMiddleware, ReviewController.readReviewsByRestaurant);
+router.get("/reviews/read/:id", authMiddleware, ReviewController.readReviewsById);
 router.put("/reviews/update/:id", authMiddleware, ReviewController.updateReview);
+router.delete("/reviews/delete/:id", authMiddleware, ReviewController.deleteReview);
 
 router.post("/city/create", upload.single('image'), CityController.createCity);
 router.get("/city/readall", authMiddleware, CityController.readAllCities);
