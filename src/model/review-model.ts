@@ -4,7 +4,6 @@ export interface IReview {
     restaurantId: number;
     content: string;
     rating: number;
-    createdAt: Date;
   }
   
   export interface ICreateReview {
@@ -27,4 +26,8 @@ export interface IReview {
   export interface IReadReview {
     id?: number;
     restaurantId?: number;
+  }
+
+  export interface IReviewResponse {
+    data: IReview[];
   }

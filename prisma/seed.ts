@@ -1,18 +1,33 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Insert roles
+  // Buat roles (admin dan user)
   await prisma.role.createMany({
     data: [
       { id: 1, name: 'admin' },
       { id: 2, name: 'user' },
     ],
-    skipDuplicates: true, // Hindari duplikasi jika seed dijalankan lagi
+    skipDuplicates: true, // Menghindari error jika role sudah ada
   });
 
-  console.log('Seeding completed.');
+  // Enkripsi password admin
+  const hashedPassword = await bcrypt.hash('adminpassword', 10);
+
+  // Tambahkan pengguna admin
+  await prisma.user.create({
+    data: {
+      username: 'admin',
+      email: 'admin@gmail.com',
+      
+      password: hashedPassword,
+      roleId: 1,
+    },
+  });
+
+  console.log('Seeding untuk admin user selesai.');
 }
 
 main()

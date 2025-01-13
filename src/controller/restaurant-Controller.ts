@@ -1,76 +1,162 @@
-import { Request, Response } from 'express';
-import { ICreateRestaurant, IDeleteRestaurant, IReadRestaurant, IRestaurant, IUpdateRestaurant } from '../model/restaurant-model';
-import { RestaurantService } from '../services/restaurant-service';
-
+import { Request, Response } from "express";
+import {
+  ICreateRestaurant,
+  IDeleteRestaurant,
+  IReadRestaurant,
+  IRestaurant,
+  IRestaurantResponse,
+  IUpdateRestaurant,
+} from "../model/restaurant-model";
+import { RestaurantService } from "../services/restaurant-Service";
+import { RestaurantValidation } from "../validation/restaurant-validation";
 
 export class RestaurantController {
   static async createRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      const request: ICreateRestaurant = req.body as ICreateRestaurant;
-      const response: IRestaurant = await new RestaurantService().createRestaurant(request);
+      console.log("Uploaded file:", req.file);
+
+      if (!req.file) throw new Error("Image is required");
+      const imagePath = req.file.filename;
+
+      const request = {
+        ...RestaurantValidation.CREATE.parse(req.body),
+        image: imagePath, // Add the uploaded image path
+      };
+
+      console.log("Parsed request data:", request);
+
+      const response: IRestaurant =
+        await new RestaurantService().createRestaurant(request);
+
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      response.image = `${baseUrl}/images/${response.image}`;
+
       res.status(201).json({
-        message: 'Restaurant successfully created.',
+        message: "Restaurant successfully created.",
         data: response,
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'An error occurred while creating the restaurant.' });
+      res
+        .status(400)
+        .json({
+          error:
+            error instanceof Error
+              ? error.message
+              : "An error occurred while creating the restaurant.",
+        });
     }
   }
 
   static async readRestaurantById(req: Request, res: Response): Promise<void> {
     try {
-      const id = parseInt(req.params.id, 10);
-      const response: IRestaurant = await new RestaurantService().readRestaurantById(id);
+      const params = RestaurantValidation.READ_BY_ID.parse({
+        id: parseInt(req.params.id, 10),
+      });
+
+      const restaurant = await new RestaurantService().readRestaurantById(
+        params.id
+      );
+
+      console.log("Backend Response:", {
+        id: restaurant.id,
+        name: restaurant.name,
+        address: restaurant.address,
+        phone: restaurant.phone,
+        image: restaurant.image,
+      });
+
+      // Ensure the full image URL is included
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      restaurant.image = `${baseUrl}/images/${restaurant.image}`;
+
       res.status(200).json({
-        message: 'Restaurant successfully retrieved.',
-        data: response,
+        message: "Restaurant by id successfully retrieved.",
+        data: restaurant,
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while retrieving the restaurant.' });
+      console.error("Error retrieving restaurant:", error);
+      res
+        .status(400)
+        .json({ error: "An error occurred while retrieving the restaurant." });
     }
   }
 
   static async readAllRestaurants(req: Request, res: Response): Promise<void> {
     try {
-      const response: IRestaurant[] = await new RestaurantService().readAllRestaurants();
+      const response = await new RestaurantService().readAllRestaurants();
+
+      const baseUrl = `${req.protocol}://${req.get("host")}`; // Dynamically build base URL
+      const restaurantsWithImageURL = response.data.map((restaurant) => ({
+        ...restaurant,
+        image: `${baseUrl}/images/${restaurant.image}`, // Ensure correct URL format
+      }));
+
       res.status(200).json({
-        message: 'All restaurants successfully retrieved.',
-        data: response,
+        message: "All restaurants successfully retrieved.",
+        data: restaurantsWithImageURL,
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while retrieving restaurants.' });
+      console.error("Error fetching restaurants:", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving restaurants." });
     }
   }
 
-
   static async updateRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      const request: IUpdateRestaurant = req.body as IUpdateRestaurant;
-      const response: IRestaurant = await new RestaurantService().updateRestaurant(request);
+      const { id } = req.params;
+      const imagePath = req.file ? req.file.filename : undefined; // Save only the filename in the database
+
+      const {name, address, phone} = req.body;
+
+      const request: IUpdateRestaurant = {
+        id: parseInt(id),
+        ...(name && { name }),
+        ...(address && { address }),
+        ...(phone && { phone }),
+        ...(imagePath ? { image: imagePath }: {}),
+        // ...RestaurantValidation.UPDATE.parse(req.body),
+        // ...(imagePath ? { image: imagePath } : {}),
+      };
+
+      const response: IRestaurant =
+        await new RestaurantService().updateRestaurant(request);
       res.status(200).json({
-        message: 'Restaurant successfully updated.',
+        message: "Restaurant successfully updated.",
         data: response,
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'An error occurred while updating the restaurant.' });
+      res
+        .status(400)
+        .json({ error: "An error occurred while updating the restaurant.", details: error });
     }
   }
 
   static async deleteRestaurant(req: Request, res: Response): Promise<void> {
     try {
-      const request: IDeleteRestaurant = req.body as IDeleteRestaurant;
-      const response: IRestaurant = await new RestaurantService().deleteRestaurant(request);
+      const id = parseInt(req.params.id); // Convert string to number
+
+      if (isNaN(id)) {
+        throw new Error("Invalid restaurant ID");
+      }
+
+      console.log("Attempting to delete restaurant with ID:", id);
+
+      const response: IRestaurant =
+        await new RestaurantService().deleteRestaurant({ id });
+
       res.status(200).json({
-        message: 'Restaurant successfully deleted.',
+        message: "Restaurant successfully deleted.",
         data: response,
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while deleting the restaurant.' });
+      console.error("Delete failed:", error);
+      res
+        .status(400)
+        .json({ error: "An error occurred while deleting the restaurant." });
     }
   }
 }
